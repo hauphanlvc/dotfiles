@@ -64,13 +64,13 @@ define_colors() {
 load_git_prompt_PS1() {
 
     if check_git_version; then
-        if [[ -n "$HOME/.git-prompt.sh" ]]; then
+        if [[ -f "$HOME/.git-prompt.sh" ]]; then
             source ~/.git-prompt.sh
             PS1="$YELLOW\$(__git_ps1 "[%s]")$PS1"
             return
         fi
 
-        git_prompt_file=$(find / -name 'git-prompt.sh' -type f -print -quit 2>/dev/null)
+        git_prompt_file=$(find / -type f -regex '.*/git-\(prompt\.sh\|sh-prompt\)' -print -quit 2>/dev/null)
         if [[ -n "$git_prompt_file" ]]; then
             cp "$git_prompt_file" ~/.git-prompt.sh
             source ~/.git-prompt.sh
@@ -114,6 +114,6 @@ PS1="$RESET\u@\h[\A][\w]\$ "
 load_git_prompt_PS1 && export PS1
 
 
-# export NVM_DIR="$HOME/.nvm"
-# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
