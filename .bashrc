@@ -1,36 +1,36 @@
 # avoid duplicates..
 function avoid_duplicates() {
 
-	export HISTCONTROL=ignoreboth:erasedups
+  export HISTCONTROL=ignoreboth:erasedups
 
-	# append history entries..
-	shopt -s histappend
+  # append history entries..
+  shopt -s histappend
 
-	# After each command, save and reload history
-	# export PROMPT_COMMAND="history -a; history -n; $PROMPT_COMMAND"
-	export PROMPT_COMMAND="history -a; history -n;"
+  # After each command, save and reload history
+  # export PROMPT_COMMAND="history -a; history -n; $PROMPT_COMMAND"
+  export PROMPT_COMMAND="history -a; history -n;"
 
 }
 
 function load_alias() {
-	# alias
-	test -s ~/.alias && . ~/.alias || true
-	alias l='ls -alFh --color=auto'
-	alias la='ls -lah --color=auto'
-	alias ll='ls -alFh --color=auto'
-	alias ls='ls -h --color=auto'
-	alias ls-l='ls -lh --color=auto'
-	alias vim='nvim'
+  # alias
+  test -s ~/.alias && . ~/.alias || true
+  alias l='ls -alFh --color=auto'
+  alias la='ls -lah --color=auto'
+  alias ll='ls -alFh --color=auto'
+  alias ls='ls -h --color=auto'
+  alias ls-l='ls -lh --color=auto'
+  alias vim='nvim'
 }
 function load_fzf_config() {
 
-	[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+  [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
-	export FZF_DEFAULT_COMMAND='rg --hidden --files'
-	export FZF_DEFAULT_OPTS="--layout=reverse --border --height=60%"
-	# Print tree structure in the preview window
-	export FZF_ALT_C_COMMAND="ls -a"
-	export FZF_ALT_C_OPTS="--preview 'tree -C -a {}'"
+  export FZF_DEFAULT_COMMAND='rg --hidden --files'
+  export FZF_DEFAULT_OPTS="--layout=reverse --border --height=60%"
+  # Print tree structure in the preview window
+  export FZF_ALT_C_COMMAND="ls -a"
+  export FZF_ALT_C_OPTS="--preview 'tree -C -a {}'"
 
 }
 # Git Prompt Setup
@@ -47,7 +47,7 @@ check_git_version() {
 }
 
 parse_git_branch() {
-	git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/[\1]/'
+  git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/[\1]/'
 }
 
 define_colors() {
@@ -100,7 +100,7 @@ add_more_PATH() {
     export PATH=$PATH:$(go env GOPATH)/bin
 }
 if [ -f /etc/bash_completion ]; then
-	source /etc/bash_completion
+  source /etc/bash_completion
 fi
 
 # uexport PS1="$(tput setaf 39)\u@$(tput setaf 51)\h $(tput setaf 2)$(date +"%H:%M:%S") $(tput setaf 62)\w$(tput setaf 11)\$(parse_git_branch) $(tput sgr0)$ "
