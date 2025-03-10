@@ -114,7 +114,7 @@ add_more_PATH
 define_colors
 PS1="$RESET\u@\h[\A][\w]\$ "
 load_git_prompt_PS1 && export PS1
-
+export DISPLAY=:0
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
