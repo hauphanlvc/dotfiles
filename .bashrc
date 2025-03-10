@@ -1,6 +1,8 @@
 # avoid duplicates..
-function avoid_duplicates() {
-
+function set_history() {
+  # Increase history size
+  export HISTSIZE=100000
+  export HISTFILESIZE=200000
   export HISTCONTROL=ignoreboth:erasedups
 
   # append history entries..
@@ -105,7 +107,7 @@ fi
 
 # uexport PS1="$(tput setaf 39)\u@$(tput setaf 51)\h $(tput setaf 2)$(date +"%H:%M:%S") $(tput setaf 62)\w$(tput setaf 11)\$(parse_git_branch) $(tput sgr0)$ "
 # export PS1="\u@\h[\A][\w]\$(__git_ps1 "[%s]")\$ "
-avoid_duplicates
+set_history
 load_alias
 load_fzf_config
 add_more_PATH
