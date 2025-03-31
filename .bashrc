@@ -23,6 +23,7 @@ function load_alias() {
   alias ls='ls -h --color=auto'
   alias ls-l='ls -lh --color=auto'
   alias vim='nvim'
+  alias rm="rm -i"
 }
 function load_fzf_config() {
 
