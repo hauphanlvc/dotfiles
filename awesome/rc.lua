@@ -53,20 +53,6 @@ do
 end
 -- }}}
 
-local themes = {
-	"blackburn", -- 1
-	"copland", -- 2
-	"dremora", -- 3
-	"holo", -- 4
-	"multicolor", -- 5
-	"powerarrow", -- 6
-	"powerarrow-dark", -- 7
-	"rainbow", -- 8
-	"steamburn", -- 9
-	"vertex", -- 10
-}
-
-local chosen_theme = themes[5]
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
 -- beautiful.init(gears.filesystem.get_themes_dir() .. "default/theme.lua")
@@ -197,7 +183,7 @@ awful.screen.connect_for_each_screen(function(s)
 		filter = awful.widget.taglist.filter.all,
 		buttons = tagListButtons,
 	})
-
+	seperaterLine = wibox.widget.textbox("  |  ")
 	-- Create a tasklist widget
 	s.mytasklist = awful.widget.tasklist({
 		screen = s,
@@ -223,8 +209,16 @@ awful.screen.connect_for_each_screen(function(s)
 		s.mytasklist, -- Middle widget
 		{ -- Right widgets
 			layout = wibox.layout.fixed.horizontal,
-			-- mykeyboardlayout,
 			-- batteryWidget(),
+			awful.widget.watch("acpi", 10),
+			seperaterLine,
+			awful.widget.watch('bash -c "$HOME/.config/awesome/bin/CpuPercent"', 1),
+			seperaterLine,
+			awful.widget.watch('bash -c "$HOME/.config/awesome/bin/UsedMem"', 1),
+			seperaterLine,
+			awful.widget.watch('bash -c "$HOME/.config/awesome/bin/AvailableMem"', 1),
+			seperaterLine,
+			awful.widget.watch('bash -c "sensors | grep temp1 | xargs"', 1),
 			-- volumeWidget(),
 			awful.widget.keyboardlayout(),
 			wibox.widget.systray(),
