@@ -73,7 +73,7 @@ local chosen_theme = themes[5]
 beautiful.init("/home/hau/.config/awesome/themes/default/theme.lua")
 beautiful.get().wallpaper = "/home/hau/Downloads/pexels-eberhardgross-640781.jpg"
 -- This is used later as the default terminal and editor to run.
-terminal = "x-terminal-emulator"
+terminal = "terminator"
 editor = os.getenv("EDITOR") or "editor"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -160,8 +160,8 @@ local function set_wallpaper(s)
 end
 
 -- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
-local batteryWidget = require("awesome-wm-widgets.battery-widget.battery")
-local volumeWidget = require("awesome-wm-widgets.volume-widget.volume")
+-- local batteryWidget = require("awesome-wm-widgets.battery-widget.battery")
+-- local volumeWidget = require("awesome-wm-widgets.volume-widget.volume")
 -- local batteryWidget = require("battery")
 screen.connect_signal("property::geometry", set_wallpaper)
 
@@ -224,7 +224,7 @@ awful.screen.connect_for_each_screen(function(s)
 		{ -- Right widgets
 			layout = wibox.layout.fixed.horizontal,
 			-- mykeyboardlayout,
-			batteryWidget(),
+			-- batteryWidget(),
 			-- volumeWidget(),
 			awful.widget.keyboardlayout(),
 			wibox.widget.systray(),
