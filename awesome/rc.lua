@@ -183,7 +183,7 @@ awful.screen.connect_for_each_screen(function(s)
 		filter = awful.widget.taglist.filter.all,
 		buttons = tagListButtons,
 	})
-	seperaterLine = wibox.widget.textbox("  |  ")
+	seperaterLine = wibox.widget.textbox(" w ")
 	-- Create a tasklist widget
 	s.mytasklist = awful.widget.tasklist({
 		screen = s,
@@ -335,9 +335,9 @@ globalkeys = gears.table.join(
 		menubar.show()
 	end, { description = "show the menubar", group = "launcher" }),
 
-	awful.key({ "Control", "Shift" }, "l", function()
+	awful.key({ "Shift", "Control" }, "l", function()
 		-- awful.util.spawn("i3lock")
-		awful.util.spawn("./Downloads/lock.sh")
+		awful.spawn.easy_async_with_shell("$HOME/.config/awesome/bin/lock")
 	end, { description = "Lock screen by i3lock", group = "launcher" }),
 
 	awful.key({ modkey, "Shift" }, "s", function()
