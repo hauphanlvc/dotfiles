@@ -1,9 +1,9 @@
 ## dotfiles
 
-- Neovim config but don't use any plugins.
-- i3 vm config.
-- awesome vm config but I have changed to use i3 instead of awesome. Because I think i3 is simple than awesome, just my opinion.
-- minimal tmux config which can be used in any where else.
-- And, hmm, maybe the future I will add to new config
+- Neovim config, but I don't use any plugins.
+- i3 VM config.
+- Awesome VM config, but I changed to use i3 instead of Awesome. Because i3 is simple than awesome.
+- Minimal tmux config which can be used anywhere else.
+- And, hmm, maybe in the future I will add to the new configs
 
-## NOTE: useful-scripts is just a folder can be used by myself, so don't care this folder
+NOTE: useful-scripts is just a folder that can be used by me, so don't care about this folder
