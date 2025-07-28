@@ -1,9 +1,8 @@
-vim.cmd("colorscheme quiet")
 vim.opt.undofile      = true
 vim.opt.clipboard     = "unnamedplus"
 vim.opt.laststatus    = 0
 vim.opt.expandtab   = true
-vim.opt.shiftwidth  = 4
+vim.opt.shiftwidth  = 2
 vim.opt.softtabstop = -1
 vim.opt.ignorecase  = true
 vim.opt.smartcase   = true
@@ -15,16 +14,38 @@ vim.keymap.set("n", "<space>c", function() vim.cmd("noswapfile enew | setlocal b
 
 vim.opt.grepprg = "rg --vimgrep --smart-case --glob '!.git/*'"
 
--- vim.lsp.config('gopls', {
---  settings = {
---     gopls = {
---       analyses = {
---         unusedparams = true,
---       },
---       staticcheck = true,
---       gofumpt = true,
---     },
---   },
--- })
---
--- vim.lsp.enable('gopls')
+
+function goplsLSP() 
+  vim.lsp.config('gopls', {
+    cmd = { 'gopls' },
+    filetypes = { 'go' },
+    settings = {
+    gopls = {
+      analyses = {
+        unusedparams = true,
+      },
+      staticcheck = true,
+      gofumpt = true,
+        },
+    },
+  })
+
+  vim.lsp.enable('gopls')
+
+  -- Reference: https://neovim.io/doc/user/lsp.html#_lua-module:-vim.lsp.completion
+  vim.cmd[[set completeopt+=menuone,noselect,popup]]
+  vim.lsp.start({
+    name = 'gopls',
+    cmd = { 'gopls'},
+    on_attach = function(client, bufnr)
+      vim.lsp.completion.enable(true, client.id, bufnr, {
+        autotrigger = true,
+        convert = function(item)
+          return { abbr = item.label:gsub('%b()', '') }
+        end,
+      })
+    end,
+  })
+end
+
+goplsLSP()
