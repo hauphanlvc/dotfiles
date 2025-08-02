@@ -1,6 +1,5 @@
 vim.opt.undofile      = true
 vim.opt.clipboard     = "unnamedplus"
-vim.opt.laststatus    = 0
 vim.opt.expandtab   = true
 vim.opt.shiftwidth  = 2
 vim.opt.softtabstop = -1
