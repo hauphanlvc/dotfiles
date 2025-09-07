@@ -97,8 +97,8 @@ set_neovim_is_default() {
     export EDITOR
 }
 add_more_PATH() {
-    # export PATH="~/bin/:$PATH"
     # export PATH="~/.local/share/apache-maven-3.9.8/bin/:$PATH"
+    export PATH=$PATH:~/bin
     export PATH=$PATH:/usr/local/go/bin
     export PATH=$PATH:$(go env GOPATH)/bin
 }
@@ -106,8 +106,7 @@ if [ -f /etc/bash_completion ]; then
   source /etc/bash_completion
 fi
 
-# uexport PS1="$(tput setaf 39)\u@$(tput setaf 51)\h $(tput setaf 2)$(date +"%H:%M:%S") $(tput setaf 62)\w$(tput setaf 11)\$(parse_git_branch) $(tput sgr0)$ "
-# export PS1="\u@\h[\A][\w]\$(__git_ps1 "[%s]")\$ "
+set -o vi
 set_history
 load_alias
 load_fzf_config
@@ -119,4 +118,5 @@ export DISPLAY=:0
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion]
+
