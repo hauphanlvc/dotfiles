@@ -38,15 +38,15 @@ function load_fzf_config() {
 }
 # Git Prompt Setup
 check_git_version() {
-    local required_version="1.9.3"
-    local git_version
-    git_version=$(git --version | awk '{print $3}')
+  local required_version="1.9.3"
+  local git_version
+  git_version=$(git --version | awk '{print $3}')
 
-    if [[ $(printf "%s\n" "$required_version" "$git_version" | sort -V | head -n1) == "$required_version" ]]; then
-        return 0  # Git version is >= 1.9.3
-    else
-        return 1  # Git version is < 1.9.3
-    fi
+  if [[ $(printf "%s\n" "$required_version" "$git_version" | sort -V | head -n1) == "$required_version" ]]; then
+    return 0 # Git version is >= 1.9.3
+  else
+    return 1 # Git version is < 1.9.3
+  fi
 }
 
 parse_git_branch() {
@@ -54,59 +54,58 @@ parse_git_branch() {
 }
 
 define_colors() {
-    # Define colors
-    RED="\[\033[0;31m\]"
-    GREEN="\[\033[0;32m\]"
-    YELLOW="\[\033[0;33m\]"
-    BLUE="\[\033[0;34m\]"
-    MAGENTA="\[\033[0;35m\]"
-    CYAN="\[\033[0;36m\]"
-    RESET="\[\033[0m\]"  # Reset color
+  # Define colors
+  RED="\[\033[0;31m\]"
+  GREEN="\[\033[0;32m\]"
+  YELLOW="\[\033[0;33m\]"
+  BLUE="\[\033[0;34m\]"
+  MAGENTA="\[\033[0;35m\]"
+  CYAN="\[\033[0;36m\]"
+  RESET="\[\033[0m\]" # Reset color
 }
 
 load_git_prompt_PS1() {
 
-    if check_git_version; then
-        if [[ -f "$HOME/.git-prompt.sh" ]]; then
-            source ~/.git-prompt.sh
-            PS1="$YELLOW\$(__git_ps1 "[%s]")$PS1"
-            return
-        fi
-
-        git_prompt_file=$(find / -type f -regex '.*/git-\(prompt\.sh\|sh-prompt\)' -print -quit 2>/dev/null)
-        if [[ -n "$git_prompt_file" ]]; then
-            cp "$git_prompt_file" ~/.git-prompt.sh
-            source ~/.git-prompt.sh
-            PS1="$YELLOW\$(__git_ps1 "[%s]")$PS1"
-        else
-            echo "git-prompt.sh not found. Using fallback."
-            PS1="[$(parse_git_branch)]$PS1"
-        fi
-    else
-            PS1="$(parse_git_branch)$PS1"
+  if check_git_version; then
+    if [[ -f "$HOME/.git-prompt.sh" ]]; then
+      source ~/.git-prompt.sh
+      PS1="$YELLOW\$(__git_ps1 "[%s]")$PS1"
+      return
     fi
+
+    git_prompt_file=$(find / -type f -regex '.*/git-\(prompt\.sh\|sh-prompt\)' -print -quit 2>/dev/null)
+    if [[ -n "$git_prompt_file" ]]; then
+      cp "$git_prompt_file" ~/.git-prompt.sh
+      source ~/.git-prompt.sh
+      PS1="$YELLOW\$(__git_ps1 "[%s]")$PS1"
+    else
+      echo "git-prompt.sh not found. Using fallback."
+      PS1="[$(parse_git_branch)]$PS1"
+    fi
+  else
+    PS1="$(parse_git_branch)$PS1"
+  fi
 }
 set_neovim_is_default() {
-    if command -v nvim &>/dev/null; then
-        # Set neovim as the default editor
-        EDITOR=nvim
-    else
-        # Fallback to vim if neovim is not installed
-        EDITOR=vim
-    fi
-    export EDITOR
+  if command -v nvim &>/dev/null; then
+    # Set neovim as the default editor
+    EDITOR=nvim
+  else
+    # Fallback to vim if neovim is not installed
+    EDITOR=vim
+  fi
+  export EDITOR
 }
 add_more_PATH() {
-    # export PATH="~/.local/share/apache-maven-3.9.8/bin/:$PATH"
-    export PATH=$PATH:~/bin
-    export PATH=$PATH:/usr/local/go/bin
-    export PATH=$PATH:$(go env GOPATH)/bin
+  # export PATH="~/.local/share/apache-maven-3.9.8/bin/:$PATH"
+  export PATH=$PATH:~/bin
+  export PATH=$PATH:/usr/local/go/bin
+  export PATH=$PATH:$(go env GOPATH)/bin
 }
 if [ -f /etc/bash_completion ]; then
   source /etc/bash_completion
 fi
 
-set -o vi
 set_history
 load_alias
 load_fzf_config
@@ -117,6 +116,9 @@ load_git_prompt_PS1 && export PS1
 export DISPLAY=:0
 
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion]
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion]
 
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
