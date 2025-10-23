@@ -64,7 +64,7 @@ bindsym $mod+d exec --no-startup-id dmenu_run -fn 'Source Code Pro'
 # .desktop file. It is a wrapper around dmenu, so you need that installed.
 # bindcode $mod+40 exec --no-startup-id i3-dmenu-desktop
 bindsym Ctrl+Shift+l exec --no-startup-id i3lock
-bindsym Ctrl+Shift+s exec --no-startup-id  "sleep 0.2 && scrot -s /tmp/screenshot.png && xclip -selection clipboard -t image/png -i /tmp/screenshot.png && rm /tmp/screenshot.png"
+bindsym $mod+Shift+s exec --no-startup-id  "sleep 0.2 && scrot -s /tmp/screenshot.png && xclip -selection clipboard -t image/png -i /tmp/screenshot.png && rm /tmp/screenshot.png"
 # change focus
 bindsym $mod+h focus left
 bindsym $mod+j focus down
@@ -155,6 +155,12 @@ bindsym $mod+Shift+8 move container to workspace number $ws8
 bindsym $mod+Shift+9 move container to workspace number $ws9
 bindsym $mod+Shift+0 move container to workspace number $ws10
 
+# move focused window to the next workspace on the current output
+bindsym $mod+Shift+n move container to workspace next_on_output
+
+# move focused window to the previous workspace on the current output
+bindsym $mod+Shift+p move container to workspace prev_on_output
+
 bindsym $mod+x move workspace to output next
 # reload the configuration file
 bindsym $mod+Shift+c reload
@@ -194,5 +200,5 @@ bindsym $mod+r mode "resize"
 # finds out, if available)
 bar {
         status_command i3status
-        position top
+        position bottom
 }
