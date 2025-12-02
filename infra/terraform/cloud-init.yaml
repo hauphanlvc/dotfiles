@@ -1,0 +1,22 @@
+#cloud-config
+ssh_pwauth: false
+disable_root: true
+
+users:
+  - name: ubuntu
+    gecos: "Ubuntu User"
+    sudo: "ALL=(ALL) NOPASSWD:ALL"
+    groups: [sudo]
+    shell: /bin/bash
+    lock_passwd: true
+    ssh_authorized_keys:
+      - "${ssh_authorized_key}"
+
+package_update: true
+package_upgrade: true
+packages:
+  - "htop"
+  - "vim"
+
+timezone: "Asia/Ho_Chi_Minh"
+
