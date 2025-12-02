@@ -5,7 +5,7 @@ locals {
     "server-02" = "10.79.225.112"
   }
   # Path to the public key matching ~/.config/ssh/share_key
-  ssh_pubkey_path = pathexpand("~/.ssh/shared_key.pub")
+  ssh_pubkey_path = pathexpand("../secret_files/shared_key.pub")
 
   # Read the public key and trim newline
   ssh_pubkey = trimspace(file(local.ssh_pubkey_path))
