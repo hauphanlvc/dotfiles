@@ -13,7 +13,11 @@ vim.opt.timeout = true
 vim.opt.timeoutlen = 300
 vim.opt.grepprg = "rg --vimgrep --smart-case --glob '!.git/*'"
 vim.opt.termguicolors = true
+-- Search down into subfolders; Provides tab-completion for all file-related tasks
+vim.opt.path:append("**")
 
+-- Display all matching files when we tab complete
+vim.opt.wildmenu = true
 -- Key mappings
 vim.keymap.set("i", "jk", "<Esc>", { noremap = true, silent = true })
 vim.keymap.set("n", "gl", vim.diagnostic.open_float, { desc = "Show diagnostic" })

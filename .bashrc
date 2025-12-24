@@ -122,6 +122,6 @@ define_colors
 PS1="$RESET\u@\h[\A][\w]\$ "
 load_git_prompt_PS1 && export PS1
 export DISPLAY=:0
-
+export EDITOR=vim
 
 complete -C /usr/bin/terraform terraform

@@ -38,8 +38,6 @@ exec --no-startup-id fcitx5
 
 # Startup wallpaper
 # exec --no-startup-id nitrogen --restore
-# Startup left-right monitor-laptop
-exec --no-startup-id xrandr --output HDMI-1-0 --right-of eDP-1 --auto
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
