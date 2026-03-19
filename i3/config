@@ -122,7 +122,6 @@ bindsym $mod+Shift+d focus child
 
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
-set $wsY "y"
 set $wsU "u"
 set $wsI "i"
 set $wsO "o"
@@ -137,7 +136,6 @@ set $ws9 "9"
 set $ws10 "10"
 
 # switch to workspace
-bindsym $mod+y workspace $wsY
 bindsym $mod+u workspace $wsU
 bindsym $mod+i workspace $wsI
 bindsym $mod+o workspace $wsO
@@ -156,7 +154,6 @@ bindsym $mod+0 workspace number $ws10
 bindsym $mod+Shift+u move container to workspace $wsU
 bindsym $mod+Shift+i move container to workspace $wsI
 bindsym $mod+Shift+o move container to workspace $wsO
-bindsym $mod+Shift+y move container to workspace $wsY
 bindsym $mod+Shift+1 move container to workspace number $ws1
 bindsym $mod+Shift+2 move container to workspace number $ws2
 bindsym $mod+Shift+3 move container to workspace number $ws3
