@@ -1,3 +1,5 @@
+[[ $- != *i* ]] && return
+
 # avoid duplicates..
 function set_history() {
   # Increase history size
@@ -27,7 +29,6 @@ function load_alias() {
 }
 function load_fzf_config() {
 
-  [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
   export FZF_DEFAULT_COMMAND='rg --hidden --files'
   export FZF_DEFAULT_OPTS="--layout=reverse --border --height=60%"
@@ -116,7 +117,7 @@ fi
 
 set_history
 load_alias
-load_fzf_config
+# load_fzf_config
 add_more_PATH
 define_colors
 PS1="$RESET\u@\h[\A][\w]\$ "
