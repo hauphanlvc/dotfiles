@@ -1,0 +1,13 @@
+---
+- name: Set up environemnt
+  hosts: local
+  gather_facts: no
+  tasks:
+    - import_tasks: tasks/packages.yaml
+      tags: 
+      - packages
+      - neovim
+      become: true
+      become_user: root
+    - import_tasks: tasks/add_neovim_configure.yaml
+      tags: neovim

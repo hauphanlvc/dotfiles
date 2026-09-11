@@ -1,0 +1,14 @@
+---
+- name: Create neovim configure folder
+  ansible.builtin.file:
+    path: ~/.config/nvim/ 
+    state: directory
+    mode: '0755'
+- name: Get real link of neovim configure
+  ansible.builtin.command: realpath ../simple-nvim/init.lua 
+  register: file
+- name: Create the symblic link for neovim configure
+  ansible.builtin.file:
+    src: "{{ file.stdout }}"
+    dest: ~/.config/nvim/init.lua
+    state: link

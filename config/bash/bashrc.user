@@ -1,0 +1,16 @@
+# Increase history size
+export HISTSIZE=100000
+export HISTFILESIZE=200000
+export HISTCONTROL=ignoreboth:erasedups
+
+# After each command, save and reload history
+# export PROMPT_COMMAND="history -a; history -n; $PROMPT_COMMAND"
+export PROMPT_COMMAND="history -a; history -n;"
+
+. "$HOME/.cargo/env"
+source ~/.bash_completion/alacritty
+export EDITOR="nvim"
+export VISUAL="nvim"
+
+# opencode
+export PATH=/home/hau/.opencode/bin:$PATH
