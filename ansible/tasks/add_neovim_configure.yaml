@@ -5,7 +5,7 @@
     state: directory
     mode: '0755'
 - name: Get real link of neovim configure
-  ansible.builtin.command: realpath ../simple-nvim/init.lua 
+  ansible.builtin.command: realpath ../config/nvim/init.lua
   register: file
 - name: Create the symblic link for neovim configure
   ansible.builtin.file:

@@ -9,6 +9,20 @@
     name: software-properties-common
     state: present
 
+- name: Install dependency packages
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+    name: "{{ item }}"
+    state: present
+  loop:
+    - libxcb-xinerama0
+    - libxcb-cursor0
+    - libnss3
+    - libxcb-icccm4
+    - libxcb-keysyms1
+  tags:
+    - anki
 - name: Download and extract Neovim
   ansible.builtin.unarchive:
     src: https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz

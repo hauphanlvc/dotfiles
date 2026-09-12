@@ -11,3 +11,9 @@
       become_user: root
     - import_tasks: tasks/add_neovim_configure.yaml
       tags: neovim
+    - import_tasks: tasks/install_anki.yaml
+      vars:
+        anki_version: "26.08.1"
+      become: true
+      become_user: root
+      tags: anki

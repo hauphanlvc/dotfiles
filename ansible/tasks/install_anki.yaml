@@ -1,0 +1,29 @@
+---
+- name: Get install file status
+  stat:
+    path: /tmp/anki-linux/install.sh
+  register: file_status
+
+- name: Display file existence
+  debug:
+    msg: "The file exists"
+  when: file_status.stat.exists
+- name: Download and extract anki
+  unarchive:
+    src: "https://github.com/ankitects/anki/releases/download/{{ anki_version }}/anki-{{ anki_version }}-linux-x86_64.tar.zst"
+    dest: /tmp
+    remote_src: true
+  when: file_status.stat.exists != True
+- name: Get install file status again
+  stat:
+    path: /tmp/anki-linux/install.sh
+  register: file_status
+- name: Install anki
+  command: chdir=/tmp/anki-linux/ sudo ./install.sh
+  when: file_status.stat.exists == True
+- name: Get anki version
+  command: anki --version
+  register: version
+- debug:
+    msg: "{{ version }}"
+
