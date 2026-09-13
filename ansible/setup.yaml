@@ -17,3 +17,7 @@
       become: true
       become_user: root
       tags: anki
+    - import_tasks: tasks/brave.yaml
+      become: true
+      become_user: root
+      tags: brave

@@ -1,0 +1,16 @@
+---
+- name: Download brave-browser-nightly-archive-keyring
+  ansible.builtin.get_url:
+    url: "{{ item.url }}"
+    dest: "{{ item.dest }}" 
+
+  loop:
+    - { url: "https://brave-browser-apt-nightly.s3.brave.com/brave-browser-nightly-archive-keyring.gpg", dest: "/usr/share/keyrings/brave-browser-nightly-archive-keyring.gpg" }
+    - { url: "https://brave-browser-apt-nightly.s3.brave.com/brave-browser.sources", dest: "/etc/apt/sources.list.d/brave-browser-nightly.sources" }
+- name: Install Brave nightly
+  ansible.builtin.apt:
+    update_cache: yes
+    name: brave-browser-nightly
+    state: present
+
+
