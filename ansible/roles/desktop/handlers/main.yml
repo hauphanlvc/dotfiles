@@ -1,4 +1,4 @@
 ---
 - name: Refresh font cache
   become: false
-  ansible.builtin.command: fc-cache -f
+  ansible.builtin.command: fc-cache -fv
