@@ -1,0 +1,35 @@
+---
+- name: Gather installed package facts
+  ansible.builtin.package_facts:
+
+- name: Brave nightly
+  ansible.builtin.import_tasks: brave.yml
+
+- name: Zen browser
+  ansible.builtin.import_tasks: zen.yml
+
+- name: Add Mozilla repository
+  ansible.builtin.deb822_repository:
+    name: mozilla
+    uris: https://packages.mozilla.org/apt
+    suites: mozilla
+    components: main
+    signed_by: https://packages.mozilla.org/apt/repo-signing-key.gpg
+
+- name: Install Firefox Developer Edition
+  ansible.builtin.apt:
+    name: firefox-devedition
+    update_cache: true
+    state: present
+
+# The Chrome and Edge .debs register their own apt repo on install,
+# so after the first install `apt upgrade` keeps them on the latest version.
+- name: Install Google Chrome (latest)
+  ansible.builtin.apt:
+    deb: https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+  when: "'google-chrome-stable' not in ansible_facts.packages"
+
+- name: Install Microsoft Edge (latest)
+  ansible.builtin.apt:
+    deb: https://go.microsoft.com/fwlink?linkid=2149051
+  when: "'microsoft-edge-stable' not in ansible_facts.packages"

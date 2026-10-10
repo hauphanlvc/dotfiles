@@ -1,0 +1,22 @@
+---
+- name: Look up latest GitHub release
+  ansible.builtin.uri:
+    url: "https://api.github.com/repos/{{ item.repo }}/releases/latest"
+    return_content: true
+  register: github_releases
+  check_mode: false
+  loop: "{{ github_debs }}"
+  loop_control:
+    label: "{{ item.repo }}"
+
+# Only download when the installed version differs from the latest tag
+# (versions like "1.18.2+64" are compared without the "+build" suffix)
+- name: Install latest .deb
+  ansible.builtin.apt:
+    deb: "{{ (item.json.assets | selectattr('name', 'match', item.item.pattern) | first).browser_download_url }}"
+  when: >-
+    item.item.pkg not in ansible_facts.packages or
+    (ansible_facts.packages[item.item.pkg][0].version.split('+')[0]) != (item.json.tag_name | regex_replace('^v', ''))
+  loop: "{{ github_releases.results }}"
+  loop_control:
+    label: "{{ item.item.pkg }} {{ item.json.tag_name }}"

@@ -1,0 +1,5 @@
+---
+- name: Install audio and portal packages
+  ansible.builtin.apt:
+    name: "{{ audio_packages }}"
+    state: present

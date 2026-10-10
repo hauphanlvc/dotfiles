@@ -1,0 +1,16 @@
+---
+common_packages:
+  - software-properties-common
+  - ca-certificates
+  - curl
+  - gnupg
+  - git
+  - tmux
+  - vim
+  - htop
+  - btop
+  - tree
+  - fastfetch
+  - util-linux-extra
+  - intel-gpu-tools
+  - ffmpeg

@@ -1,0 +1,31 @@
+---
+- name: Gather installed package facts
+  ansible.builtin.package_facts:
+
+- name: Discord
+  ansible.builtin.import_tasks: discord.yml
+
+- name: GitHub release debs (Obsidian, LocalSend)
+  ansible.builtin.import_tasks: github_debs.yml
+
+- name: Add AnyDesk repository
+  ansible.builtin.deb822_repository:
+    name: anydesk
+    uris: http://deb.anydesk.com/
+    suites: all
+    components: main
+    signed_by: https://keys.anydesk.com/repos/DEB-GPG-KEY
+
+- name: Add OBS Studio PPA
+  ansible.builtin.command: add-apt-repository -y ppa:obsproject/obs-studio
+  args:
+    creates: "/etc/apt/sources.list.d/obsproject-ubuntu-obs-studio-{{ ansible_distribution_release }}.sources"
+
+- name: Install AnyDesk and OBS Studio
+  ansible.builtin.apt:
+    name: [anydesk, obs-studio]
+    update_cache: true
+    state: present
+
+- name: Anki
+  ansible.builtin.import_tasks: anki.yml

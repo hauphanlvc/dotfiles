@@ -1,0 +1,8 @@
+---
+# Prometheus/Grafana stay as standalone docker-compose files in ./monitoring
+- name: Monitoring agents
+  hosts: local
+  gather_facts: false
+  become: true
+  roles:
+    - { role: node_exporter, tags: [monitoring] }

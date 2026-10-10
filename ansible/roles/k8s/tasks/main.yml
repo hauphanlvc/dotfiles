@@ -1,0 +1,26 @@
+---
+- name: Install kubectl {{ kubectl_version }}
+  ansible.builtin.get_url:
+    url: "https://dl.k8s.io/release/{{ kubectl_version }}/bin/linux/amd64/kubectl"
+    dest: /usr/local/bin/kubectl
+    mode: "0755"
+    checksum: "sha256:https://dl.k8s.io/release/{{ kubectl_version }}/bin/linux/amd64/kubectl.sha256"
+
+- name: Verify kubectl version
+  ansible.builtin.command:
+    cmd: kubectl version --client
+  register: installed_kubectl_version
+  changed_when: false
+  check_mode: false
+  failed_when: false
+
+- name: Debug kubectl version
+  ansible.builtin.debug:
+    msg: "{{ installed_kubectl_version.stdout }}"
+
+- name: Install kind {{ kind_version }}
+  ansible.builtin.get_url:
+    url: "https://kind.sigs.k8s.io/dl/{{ kind_version }}/kind-linux-amd64"
+    dest: /usr/local/bin/kind
+    mode: "0755"
+    checksum: "sha256:https://github.com/kubernetes-sigs/kind/releases/download/{{ kind_version }}/kind-linux-amd64.sha256sum"

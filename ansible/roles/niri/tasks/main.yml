@@ -1,0 +1,23 @@
+---
+# add-apt-repository writes the same .sources file as a manual setup, avoiding duplicates
+- name: Add danklinux PPA
+  ansible.builtin.command: add-apt-repository -y ppa:avengemedia/danklinux
+  args:
+    creates: "/etc/apt/sources.list.d/avengemedia-ubuntu-danklinux-{{ ansible_distribution_release }}.sources"
+
+- name: Install noctalia archive keyring
+  ansible.builtin.apt:
+    deb: https://pkg.noctalia.dev/deb/nickh-archive-keyring.deb
+    state: present
+
+- name: Add noctalia repository
+  ansible.builtin.get_url:
+    url: "https://pkg.noctalia.dev/deb/noctalia-{{ ansible_distribution_release }}.sources"
+    dest: "/etc/apt/sources.list.d/noctalia-{{ ansible_distribution_release }}.sources"
+    mode: '0644'
+
+- name: Install niri and noctalia
+  ansible.builtin.apt:
+    name: [niri, noctalia]
+    update_cache: true
+    state: present

@@ -1,0 +1,4 @@
+---
+# kind runs clusters inside Docker containers
+dependencies:
+  - role: docker

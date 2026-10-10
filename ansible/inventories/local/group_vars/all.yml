@@ -1,0 +1,10 @@
+---
+target_user: hau
+target_home: "/home/{{ target_user }}"
+
+# Pinned versions (bump here)
+nodejs_major: "24"            # NodeSource LTS line
+anki_version: "26.08.1"
+kubectl_version: "v1.35.8"
+kind_version: "v0.33.0"
+node_exporter_version: "1.12.1"

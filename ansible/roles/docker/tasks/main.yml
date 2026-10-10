@@ -1,0 +1,27 @@
+---
+- name: Add Docker repository
+  ansible.builtin.deb822_repository:
+    name: docker
+    uris: https://download.docker.com/linux/ubuntu
+    suites: "{{ ansible_distribution_release }}"
+    components: stable
+    architectures: amd64
+    signed_by: https://download.docker.com/linux/ubuntu/gpg
+
+- name: Install Docker
+  ansible.builtin.apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    update_cache: true
+    state: present
+
+# Takes effect after logging out and back in (or `newgrp docker`)
+- name: Allow {{ target_user }} to use docker without sudo
+  ansible.builtin.user:
+    name: "{{ target_user }}"
+    groups: docker
+    append: true

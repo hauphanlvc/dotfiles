@@ -1,0 +1,27 @@
+---
+- name: Create neovim configure folder
+  become: false
+  ansible.builtin.file:
+    path: "{{ target_home }}/.config/nvim"
+    state: directory
+    mode: '0755'
+
+- name: Check existing init.lua
+  become: false
+  ansible.builtin.stat:
+    path: "{{ target_home }}/.config/nvim/init.lua"
+  register: nvim_init
+
+# Never replace a real init.lua (e.g. a LazyVim setup); only manage the symlink
+- name: Create the symbolic link for neovim configure
+  become: false
+  ansible.builtin.file:
+    src: "{{ playbook_dir }}/../config/nvim/init.lua"
+    dest: "{{ target_home }}/.config/nvim/init.lua"
+    state: link
+  when: not nvim_init.stat.exists or nvim_init.stat.islnk
+
+- name: Warn when init.lua is a regular file
+  ansible.builtin.debug:
+    msg: "{{ target_home }}/.config/nvim/init.lua is a regular file, not a symlink to dotfiles; left untouched."
+  when: nvim_init.stat.exists and not nvim_init.stat.islnk

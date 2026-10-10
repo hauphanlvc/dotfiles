@@ -1,0 +1,11 @@
+---
+audio_packages:
+  - pipewire
+  - pipewire-pulse
+  - wireplumber
+  - pulseaudio-utils
+  - pavucontrol
+  - xdg-desktop-portal
+  - xdg-desktop-portal-gnome
+  - xdg-desktop-portal-gtk
+  - dbus-user-session

@@ -1,0 +1,17 @@
+---
+desktop_packages:
+  - libreoffice
+  - vlc
+  - gimp
+  - ubuntu-restricted-extras
+  - timeshift
+  - gnome-shell-extension-manager
+  - fonts-font-awesome
+  - fcitx5
+  - fcitx5-bamboo
+  - fcitx5-frontend-all
+  - tlp
+  - fwupd
+
+# Not packaged in Ubuntu; installed from the upstream release branch
+source_code_pro_dir: "{{ target_home }}/.local/share/fonts/source-code-pro"

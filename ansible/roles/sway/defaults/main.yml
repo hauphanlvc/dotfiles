@@ -1,0 +1,17 @@
+---
+sway_packages:
+  - sway
+  - swaylock
+  - swayidle
+  - swaybg
+  - xwayland
+  - wl-clipboard
+  - grim
+  - slurp
+  - mako-notifier       # the apt package for the mako notification daemon
+  - wlr-randr
+  - wdisplays
+  - i3status
+  - brightnessctl
+  - gammastep
+  - xdg-desktop-portal-wlr

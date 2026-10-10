@@ -1,0 +1,9 @@
+---
+- name: Install user tools
+  ansible.builtin.shell:
+    cmd: "set -o pipefail && {{ item.cmd }}"
+    creates: "{{ item.creates }}"
+    executable: /bin/bash
+  loop: "{{ user_tools }}"
+  loop_control:
+    label: "{{ item.name }}"

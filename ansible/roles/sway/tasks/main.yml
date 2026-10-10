@@ -1,0 +1,5 @@
+---
+- name: Install sway packages
+  ansible.builtin.apt:
+    name: "{{ sway_packages }}"
+    state: present

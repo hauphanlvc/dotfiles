@@ -1,0 +1,36 @@
+---
+- name: Install dev packages
+  ansible.builtin.apt:
+    name: "{{ dev_packages }}"
+    state: present
+
+- name: Add fd-find by alternative
+  community.general.alternatives:
+    name: fd
+    path: /usr/bin/fdfind
+    link: /usr/bin/fd
+    priority: 100
+    state: present
+
+- name: Add NodeSource repository
+  ansible.builtin.deb822_repository:
+    name: nodesource
+    uris: "https://deb.nodesource.com/node_{{ nodejs_major }}.x"
+    suites: nodistro
+    components: main
+    signed_by: https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key
+  register: nodesource_repo
+
+# NodeSource's nodejs bundles npm and conflicts with Ubuntu's npm package
+- name: Remove Ubuntu npm package
+  ansible.builtin.apt:
+    name: npm
+    state: absent
+
+# In --check mode a newly added repo doesn't exist yet, so skip instead of failing
+- name: Install nodejs {{ nodejs_major }}.x from NodeSource
+  ansible.builtin.apt:
+    name: "nodejs={{ nodejs_major }}.*"
+    update_cache: true
+    state: present
+  when: not (ansible_check_mode and nodesource_repo is changed)

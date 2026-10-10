@@ -1,0 +1,15 @@
+---
+# Installed once with the vendor script; each tool updates itself afterwards
+user_tools:
+  - name: rustup
+    cmd: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    creates: "{{ target_home }}/.cargo/bin/rustup"
+  - name: zed
+    cmd: curl -f https://zed.dev/install.sh | sh
+    creates: "{{ target_home }}/.local/bin/zed"
+  - name: opencode
+    cmd: curl -fsSL https://opencode.ai/install | bash
+    creates: "{{ target_home }}/.opencode/bin/opencode"
+  - name: antigravity-cli
+    cmd: curl -fsSL https://antigravity.google/cli/install.sh | bash
+    creates: "{{ target_home }}/.local/bin/agy"

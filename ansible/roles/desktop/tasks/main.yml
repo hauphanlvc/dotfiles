@@ -1,0 +1,38 @@
+---
+# ubuntu-restricted-extras pulls ttf-mscorefonts-installer, which blocks on an EULA prompt
+- name: Pre-accept Microsoft core fonts EULA
+  ansible.builtin.debconf:
+    name: ttf-mscorefonts-installer
+    question: msttcorefonts/accepted-mscorefonts-eula
+    value: "true"
+    vtype: select
+
+- name: Install desktop packages
+  ansible.builtin.apt:
+    name: "{{ desktop_packages }}"
+    state: present
+
+- name: Install Source Code Pro font
+  become: false
+  block:
+    - name: Clone Source Code Pro release branch
+      ansible.builtin.git:
+        repo: https://github.com/adobe-fonts/source-code-pro.git
+        dest: "{{ target_home }}/.cache/source-code-pro"
+        version: release
+        depth: 1
+      register: source_code_pro_clone
+
+    - name: Create font directory
+      ansible.builtin.file:
+        path: "{{ source_code_pro_dir }}"
+        state: directory
+
+    - name: Copy Source Code Pro OTF files
+      ansible.builtin.copy:
+        src: "{{ target_home }}/.cache/source-code-pro/OTF/"
+        dest: "{{ source_code_pro_dir }}/"
+        remote_src: true
+        mode: '0644'
+      when: not (ansible_check_mode and source_code_pro_clone is changed)
+      notify: Refresh font cache

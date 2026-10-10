@@ -1,0 +1,31 @@
+---
+- name: Install Anki dependency packages
+  ansible.builtin.apt:
+    name: "{{ anki_dependencies }}"
+    state: present
+
+- name: Get installed Anki version
+  ansible.builtin.command: anki --version
+  register: anki_installed
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Install Anki {{ anki_version }}
+  when: anki_version not in (anki_installed.stdout | default(''))
+  block:
+    - name: Download and extract Anki
+      ansible.builtin.unarchive:
+        src: "https://github.com/ankitects/anki/releases/download/{{ anki_version }}/anki-{{ anki_version }}-linux-x86_64.tar.zst"
+        dest: /tmp
+        remote_src: true
+
+    - name: Run Anki installer
+      ansible.builtin.command:
+        cmd: ./install.sh
+        chdir: /tmp/anki-linux/
+
+    - name: Clean up Anki installer
+      ansible.builtin.file:
+        path: /tmp/anki-linux
+        state: absent

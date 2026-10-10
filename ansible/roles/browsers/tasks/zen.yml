@@ -1,0 +1,14 @@
+---
+- name: Download and extract zen browser
+  ansible.builtin.unarchive:
+    src: https://github.com/zen-browser/desktop/releases/latest/download/zen.linux-x86_64.tar.xz
+    dest: /opt/
+    remote_src: true
+
+- name: Configure zen browser alternative
+  community.general.alternatives:
+    name: zen
+    path: /opt/zen/zen
+    link: /usr/bin/zen
+    priority: 100
+    state: present
