@@ -6,9 +6,9 @@ ansible.cfg                      # inventory + roles_path
 requirements.yml                 # collections (community.general)
 inventories/local/hosts.ini      # localhost
 inventories/local/group_vars/    # all.yml: target_user + pinned versions
-site.yml                         # imports workstation.yml + monitoring.yml
+site.yml                         # imports workstation.yml (monitoring.yml is commented out)
 workstation.yml                  # desktop/dev roles
-monitoring.yml                   # node_exporter
+monitoring.yml                   # node_exporter (kept as a learning reference)
 monitoring/                      # standalone prometheus/grafana docker-compose
 roles/<role>/{tasks,defaults,meta,handlers,templates,files}
 ```
@@ -16,7 +16,7 @@ roles/<role>/{tasks,defaults,meta,handlers,templates,files}
 | Role (tag) | Installs |
 |---|---|
 | `common` | base CLI tools (git, tmux, vim, htop, btop, ffmpeg, ...) |
-| `dev` | ripgrep, fd, fzf, nodejs (NodeSource) |
+| `dev` | ripgrep, fd, fzf, ansible-lint, nodejs (NodeSource) |
 | `neovim` | latest Neovim tarball in /opt + init.lua symlink |
 | `desktop` | libreoffice, vlc, gimp, fonts, fcitx5, tlp, fwupd, ... |
 | `audio` | pipewire + xdg portals (dependency of sway/niri) |
@@ -28,6 +28,7 @@ roles/<role>/{tasks,defaults,meta,handlers,templates,files}
 | `apps` | discord, obsidian, localsend, anydesk, obs-studio, anki |
 | `k8s` | kubectl, kind |
 | `user_tools` | rustup, zed, opencode, antigravity cli (as user) |
+| `thinkpad` | ThinkPad TLP thresholds, I2C touchpad udev power rule, suspend-resume hook (skipped by default; run with `--tags thinkpad`) |
 | `monitoring` | node_exporter systemd service |
 
 ## Bootstrap
@@ -37,15 +38,24 @@ ansible-galaxy collection install -r requirements.yml
 ```
 
 ## Usage
+`sudo` is passwordless for my user, so no `-K` is needed
+(add `-K` on a machine where sudo asks for a password).
 ```bash
-ansible-playbook site.yml -K                  # everything
-ansible-playbook site.yml --tags docker -K    # one role
-ansible-playbook site.yml --check --diff -K   # dry run
+ansible-playbook site.yml                     # everything (except opt-in roles like thinkpad)
+ansible-playbook site.yml --tags docker       # one role
+ansible-playbook site.yml --tags thinkpad     # ThinkPad-specific hardware tuning
+ansible-playbook site.yml --check --diff      # dry run
+ansible-lint                                  # lint all playbooks/roles
 ```
 Versions to bump live in `inventories/local/group_vars/all.yml`.
 
-## Notes:
-- Why need to add don't ask sudo password in the current user?
-    + You don't need to put the password for any tasks need to use
-- Why should seperate all tasks to small yaml files?
-    + Easily manage all of them
+## Notes
+- Why allow passwordless sudo for the current user?
+    + Ansible can run every `become` task without asking for a password.
+- Why separate tasks into small yaml files / roles?
+    + Easier to manage, and each role can be run alone with `--tags`.
+- Third-party apt repos are added as a key in `/etc/apt/keyrings/` plus a
+  deb822 `.sources` file, the same way the vendors document it, so there is
+  no extra Python dependency (`deb822_repository` would need `python3-debian`).
+- `monitoring.yml` (systemd node_exporter) is kept as a reference only. Don't
+  run it while the docker-compose stack in `monitoring/` is up: both use port 9100.

@@ -1,0 +1,31 @@
+---
+- name: Ensure TLP is installed
+  ansible.builtin.apt:
+    name: tlp
+    state: present
+
+- name: Configure TLP ThinkPad battery thresholds and I2C touchpad runtime PM denylist
+  ansible.builtin.copy:
+    src: 01-thinkpad.conf
+    dest: /etc/tlp.d/01-thinkpad.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reload TLP
+
+- name: Disable runtime autosuspend on DesignWare I2C touchpad controller via udev
+  ansible.builtin.copy:
+    src: 99-touchpad-i2c-power.rules
+    dest: /etc/udev/rules.d/99-touchpad-i2c-power.rules
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reload udev rules
+
+- name: Install systemd sleep hook to reset ELAN I2C touchpad after suspend
+  ansible.builtin.copy:
+    src: touchpad-i2c-resume
+    dest: /usr/lib/systemd/system-sleep/touchpad-i2c-resume
+    owner: root
+    group: root
+    mode: '0755'

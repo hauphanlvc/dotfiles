@@ -21,6 +21,9 @@ services:
       - '--path.rootfs=/rootfs'
       - '--path.sysfs=/host/sys'
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+      - '--collector.hwmon.chip-exclude=^(platform_thinkpad_hwmon|power_supply_ucsi_source_psy_.*|thermal_thermal_zone.*)$$'
+      - '--collector.powersupply.ignored-supplies=^ucsi-source-psy-.*$$'
+      - '--no-collector.thermal_zone'
     ports:
       - 9100:9100
     networks:

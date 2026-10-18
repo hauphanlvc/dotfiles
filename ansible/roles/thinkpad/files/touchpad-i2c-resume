@@ -1,0 +1,24 @@
+#!/bin/sh
+# Reset the ELAN0676:00 I2C HID touchpad, keep the I2C controller active,
+# and isolate touchpad IRQs from CPU0 (ACPI EC) after S3 suspend/resume
+
+case "$1" in
+    post)
+        for ctrl in /sys/devices/pci0000:00/0000:00:15.0/power/control \
+                    /sys/devices/pci0000:00/0000:00:15.0/i2c_designware.0/power/control \
+                    /sys/bus/i2c/devices/i2c-ELAN0676:00/power/control; do
+            [ -w "$ctrl" ] && echo on > "$ctrl"
+        done
+
+        [ -w /sys/module/workqueue/parameters/power_efficient ] && echo N > /sys/module/workqueue/parameters/power_efficient
+
+        if [ -e /sys/bus/i2c/drivers/i2c_hid_acpi/i2c-ELAN0676:00 ]; then
+            echo "i2c-ELAN0676:00" > /sys/bus/i2c/drivers/i2c_hid_acpi/unbind 2>/dev/null || true
+            sleep 0.2
+            echo "i2c-ELAN0676:00" > /sys/bus/i2c/drivers/i2c_hid_acpi/bind 2>/dev/null || true
+        fi
+
+        [ -w /proc/irq/27/smp_affinity_list ] && echo 2 > /proc/irq/27/smp_affinity_list 2>/dev/null || true
+        [ -w /proc/irq/56/smp_affinity_list ] && echo 3 > /proc/irq/56/smp_affinity_list 2>/dev/null || true
+        ;;
+esac

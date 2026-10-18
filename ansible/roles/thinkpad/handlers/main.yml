@@ -1,0 +1,10 @@
+---
+- name: Reload TLP
+  ansible.builtin.command: tlp start
+  changed_when: true
+
+- name: Reload udev rules
+  ansible.builtin.shell: |
+    udevadm control --reload-rules
+    udevadm trigger --subsystem-match=platform --subsystem-match=pci --subsystem-match=i2c
+  changed_when: true
