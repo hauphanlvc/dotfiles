@@ -8,3 +8,9 @@
   ansible.builtin.apt:
     name: "{{ common_packages }}"
     state: present
+
+# Used by the browsers and apps roles. Tagged `always` so it still runs
+# when only one role is selected, e.g. `--tags apps`.
+- name: Gather installed package facts
+  ansible.builtin.package_facts:
+  tags: [always]

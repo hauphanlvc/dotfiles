@@ -12,6 +12,13 @@
     name: "{{ desktop_packages }}"
     state: present
 
+# tlp is the only power manager; it conflicts with Ubuntu's power-profiles-daemon
+# (this also removes the power-mode slider from GNOME's quick settings)
+- name: Remove power-profiles-daemon
+  ansible.builtin.apt:
+    name: power-profiles-daemon
+    state: absent
+
 - name: Install Source Code Pro font
   become: false
   block:

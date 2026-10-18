@@ -1,9 +1,32 @@
 ---
-- name: Download and extract Neovim
-  ansible.builtin.unarchive:
-    src: https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
-    dest: /opt/
-    remote_src: true
+# Only download when the installed version differs from the latest release tag,
+# and wipe the old folder first so files from previous versions don't pile up.
+- name: Look up latest Neovim release
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/neovim/neovim/releases/latest
+  register: neovim_release
+  check_mode: false
+
+- name: Get installed Neovim version
+  ansible.builtin.command: /opt/nvim-linux-x86_64/bin/nvim --version
+  register: neovim_installed
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Install Neovim {{ neovim_release.json.tag_name }}
+  when: ('NVIM ' ~ neovim_release.json.tag_name) not in (neovim_installed.stdout_lines | default([]))
+  block:
+    - name: Remove old Neovim folder
+      ansible.builtin.file:
+        path: /opt/nvim-linux-x86_64
+        state: absent
+
+    - name: Download and extract Neovim
+      ansible.builtin.unarchive:
+        src: "https://github.com/neovim/neovim/releases/download/{{ neovim_release.json.tag_name }}/nvim-linux-x86_64.tar.gz"
+        dest: /opt/
+        remote_src: true
 
 - name: Configure Neovim alternative
   community.general.alternatives:

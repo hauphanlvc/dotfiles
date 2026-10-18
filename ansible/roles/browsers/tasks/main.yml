@@ -1,6 +1,5 @@
 ---
-- name: Gather installed package facts
-  ansible.builtin.package_facts:
+# ansible_facts.packages is gathered once in the common role (tagged `always`)
 
 - name: Brave nightly
   ansible.builtin.import_tasks: brave.yml
@@ -8,18 +7,28 @@
 - name: Zen browser
   ansible.builtin.import_tasks: zen.yml
 
+- name: Add Mozilla apt key
+  ansible.builtin.get_url:
+    url: https://packages.mozilla.org/apt/repo-signing-key.gpg
+    dest: /etc/apt/keyrings/mozilla.asc
+    mode: '0644'
+
 - name: Add Mozilla repository
-  ansible.builtin.deb822_repository:
-    name: mozilla
-    uris: https://packages.mozilla.org/apt
-    suites: mozilla
-    components: main
-    signed_by: https://packages.mozilla.org/apt/repo-signing-key.gpg
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/mozilla.sources
+    mode: '0644'
+    content: |
+      Types: deb
+      URIs: https://packages.mozilla.org/apt
+      Suites: mozilla
+      Components: main
+      Signed-By: /etc/apt/keyrings/mozilla.asc
+  register: mozilla_repo
 
 - name: Install Firefox Developer Edition
   ansible.builtin.apt:
     name: firefox-devedition
-    update_cache: true
+    update_cache: "{{ mozilla_repo is changed }}"
     state: present
 
 # The Chrome and Edge .debs register their own apt repo on install,

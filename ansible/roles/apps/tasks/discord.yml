@@ -13,7 +13,7 @@
   ansible.builtin.set_fact:
     discord_latest_version: "{{ discord_latest.location | regex_search('discord-([0-9.]+)\\.deb', '\\1') | first }}"
 
-- name: Install Discord {{ discord_latest_version }}
+- name: Install latest Discord
   ansible.builtin.apt:
     deb: "{{ discord_latest.location }}"
   when: >-

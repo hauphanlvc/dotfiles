@@ -4,15 +4,19 @@
     name: "{{ anki_dependencies }}"
     state: present
 
+# `anki --version` starts Anki briefly, so run it as the user, not root.
+# Output is "Starting Anki X...\nAnki X"; match the exact "Anki X" line.
 - name: Get installed Anki version
+  become: false
   ansible.builtin.command: anki --version
   register: anki_installed
   changed_when: false
   failed_when: false
   check_mode: false
 
+# The installer copies files into /usr/local, so this part still needs root
 - name: Install Anki {{ anki_version }}
-  when: anki_version not in (anki_installed.stdout | default(''))
+  when: ('Anki ' ~ anki_version) not in (anki_installed.stdout_lines | default([]))
   block:
     - name: Download and extract Anki
       ansible.builtin.unarchive:

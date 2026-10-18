@@ -1,6 +1,5 @@
 ---
-- name: Gather installed package facts
-  ansible.builtin.package_facts:
+# ansible_facts.packages is gathered once in the common role (tagged `always`)
 
 - name: Discord
   ansible.builtin.import_tasks: discord.yml
@@ -8,23 +7,34 @@
 - name: GitHub release debs (Obsidian, LocalSend)
   ansible.builtin.import_tasks: github_debs.yml
 
+- name: Add AnyDesk apt key
+  ansible.builtin.get_url:
+    url: https://keys.anydesk.com/repos/DEB-GPG-KEY
+    dest: /etc/apt/keyrings/anydesk.asc
+    mode: '0644'
+
 - name: Add AnyDesk repository
-  ansible.builtin.deb822_repository:
-    name: anydesk
-    uris: http://deb.anydesk.com/
-    suites: all
-    components: main
-    signed_by: https://keys.anydesk.com/repos/DEB-GPG-KEY
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/anydesk.sources
+    mode: '0644'
+    content: |
+      Types: deb
+      URIs: https://deb.anydesk.com/
+      Suites: all
+      Components: main
+      Signed-By: /etc/apt/keyrings/anydesk.asc
+  register: anydesk_repo
 
 - name: Add OBS Studio PPA
   ansible.builtin.command: add-apt-repository -y ppa:obsproject/obs-studio
   args:
     creates: "/etc/apt/sources.list.d/obsproject-ubuntu-obs-studio-{{ ansible_distribution_release }}.sources"
+  register: obs_ppa
 
 - name: Install AnyDesk and OBS Studio
   ansible.builtin.apt:
     name: [anydesk, obs-studio]
-    update_cache: true
+    update_cache: "{{ anydesk_repo is changed or obs_ppa is changed }}"
     state: present
 
 - name: Anki

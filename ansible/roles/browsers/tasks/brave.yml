@@ -7,9 +7,10 @@
   loop:
     - { url: "https://brave-browser-apt-nightly.s3.brave.com/brave-browser-nightly-archive-keyring.gpg", dest: "/usr/share/keyrings/brave-browser-nightly-archive-keyring.gpg" }
     - { url: "https://brave-browser-apt-nightly.s3.brave.com/brave-browser.sources", dest: "/etc/apt/sources.list.d/brave-browser-nightly.sources" }
+  register: brave_repo
 
 - name: Install Brave nightly
   ansible.builtin.apt:
     name: brave-browser-nightly
-    update_cache: true
+    update_cache: "{{ brave_repo is changed }}"
     state: present

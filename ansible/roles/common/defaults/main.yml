@@ -14,3 +14,4 @@ common_packages:
   - util-linux-extra
   - intel-gpu-tools
   - ffmpeg
+  - sshpass
