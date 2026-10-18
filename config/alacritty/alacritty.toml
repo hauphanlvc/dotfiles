@@ -8,5 +8,7 @@ save_to_clipboard = true
 size = 11
 
 [font.normal]
-family = "Source Code Pro"
+family = "Hack Nerd Font Mono"
 style = "Regular"
+[window]
+decorations = "None"

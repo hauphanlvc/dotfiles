@@ -35,6 +35,3 @@
     link: /usr/bin/nvim
     priority: 100
     state: present
-
-- name: Configure Neovim
-  ansible.builtin.import_tasks: config.yml

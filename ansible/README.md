@@ -17,7 +17,7 @@ roles/<role>/{tasks,defaults,meta,handlers,templates,files}
 |---|---|
 | `common` | base CLI tools (git, tmux, vim, htop, btop, ffmpeg, ...) |
 | `dev` | ripgrep, fd, fzf, ansible-lint, nodejs (NodeSource) |
-| `neovim` | latest Neovim tarball in /opt + init.lua symlink |
+| `neovim` | latest Neovim tarball in /opt |
 | `desktop` | libreoffice, vlc, gimp, fonts, fcitx5, tlp, fwupd, ... |
 | `audio` | pipewire + xdg portals (dependency of sway/niri) |
 | `sway` | sway + wayland utilities |

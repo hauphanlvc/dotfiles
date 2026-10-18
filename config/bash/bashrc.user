@@ -14,3 +14,16 @@ export VISUAL="nvim"
 
 # opencode
 export PATH=/home/hau/.opencode/bin:$PATH
+
+### omitted the .bashrc copied from question node
+
+alias kgp="kubectl get pods"
+
+alias kaf="kubectl apply -f"
+alias kdel="kubectl delete --now"
+alias kdelp="kubectl delete pod --now"
+
+alias kns="kubectl config set-context --current --namespace"
+alias kctx="kubectl config use-context"
+
+export x="--dry-run=client -oyaml"
