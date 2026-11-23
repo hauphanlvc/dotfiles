@@ -1,0 +1,82 @@
+---
+- name: Gather service facts for DNS management
+  ansible.builtin.service_facts:
+
+- name: Configure Cloudflare 1.1.1.1 DNS via systemd-resolved and NetworkManager
+  when: dns_state == 'present'
+  block:
+    - name: Ensure systemd-resolved drop-in directory exists
+      ansible.builtin.file:
+        path: /etc/systemd/resolved.conf.d
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Configure Cloudflare 1.1.1.1 DNS in systemd-resolved
+      ansible.builtin.template:
+        src: 10-cloudflare-dns.conf.j2
+        dest: /etc/systemd/resolved.conf.d/10-cloudflare-dns.conf
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Restart systemd-resolved
+
+    - name: Ensure systemd-resolved is enabled and running
+      ansible.builtin.systemd_service:
+        name: systemd-resolved
+        enabled: true
+        state: started
+      when:
+        - not ansible_check_mode
+        - "'systemd-resolved.service' in ansible_facts.services"
+
+    - name: Prevent NetworkManager from pushing DHCP DNS to systemd-resolved
+      when:
+        - dns_nm_ignore_dhcp | bool
+        - "'NetworkManager.service' in ansible_facts.services"
+      block:
+        - name: Ensure NetworkManager drop-in directory exists
+          ansible.builtin.file:
+            path: /etc/NetworkManager/conf.d
+            state: directory
+            owner: root
+            group: root
+            mode: '0755'
+
+        - name: Disable NetworkManager DNS management
+          ansible.builtin.copy:
+            src: 10-dns-none.conf
+            dest: /etc/NetworkManager/conf.d/10-dns-none.conf
+            owner: root
+            group: root
+            mode: '0644'
+          notify:
+            - Restart NetworkManager
+            - Restart systemd-resolved
+
+    - name: Remove NetworkManager dns=none drop-in when DHCP DNS is allowed
+      ansible.builtin.file:
+        path: /etc/NetworkManager/conf.d/10-dns-none.conf
+        state: absent
+      when: not (dns_nm_ignore_dhcp | bool)
+      notify:
+        - Restart NetworkManager
+        - Restart systemd-resolved
+
+- name: Remove Cloudflare DNS drop-ins when reverting to DHCP DNS
+  when: dns_state == 'absent'
+  block:
+    - name: Remove systemd-resolved Cloudflare DNS drop-in
+      ansible.builtin.file:
+        path: /etc/systemd/resolved.conf.d/10-cloudflare-dns.conf
+        state: absent
+      notify: Restart systemd-resolved
+
+    - name: Remove NetworkManager dns=none drop-in
+      ansible.builtin.file:
+        path: /etc/NetworkManager/conf.d/10-dns-none.conf
+        state: absent
+      notify:
+        - Restart NetworkManager
+        - Restart systemd-resolved

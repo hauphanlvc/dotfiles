@@ -5,6 +5,7 @@
   become: true
   roles:
     - { role: common,     tags: [common] }
+    - { role: dns,        tags: [dns] }
     - { role: dev,        tags: [dev] }
     - { role: neovim,     tags: [neovim] }
     - { role: desktop,    tags: [desktop] }

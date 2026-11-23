@@ -1,0 +1,14 @@
+---
+# Set to 'absent' (-e dns_state=absent) to remove drop-ins and revert to DHCP DNS.
+dns_state: present
+
+# Cloudflare 1.1.1.1 IPv4 with DNS-over-TLS (SNI: one.one.one.one)
+dns_servers:
+  - "1.1.1.1#one.one.one.one"
+  - "1.0.0.1#one.one.one.one"
+
+# systemd-resolved DNSOverTLS setting: "yes" | "opportunistic" | "no"
+dns_over_tls: "yes"
+
+# Stop NetworkManager from pushing per-link DHCP DNS servers to systemd-resolved
+dns_nm_ignore_dhcp: true

@@ -1,0 +1,4 @@
+# Managed by Ansible (role: dns)
+[Resolve]
+DNS={{ dns_servers | join(' ') }}
+DNSOverTLS={{ dns_over_tls }}
