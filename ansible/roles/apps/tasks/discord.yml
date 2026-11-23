@@ -1,21 +1,21 @@
 ---
-# Discord has no apt repo; the download URL redirects to the latest versioned .deb
+# Discord's download endpoint redirects to the latest versioned installer URL
 - name: Resolve latest Discord .deb
   ansible.builtin.uri:
-    url: "https://discord.com/api/download?platform=linux&format=deb"
+    url: "https://discord.com/api/downloads/distributions/app/installers/latest?arch=x64&channel=stable&platform=linux&format=deb"
     method: HEAD
     follow_redirects: none
     status_code: [301, 302, 303, 307, 308]
-  register: discord_latest
+  register: apps_discord_latest
   check_mode: false
 
 - name: Set latest Discord version
   ansible.builtin.set_fact:
-    discord_latest_version: "{{ discord_latest.location | regex_search('discord-([0-9.]+)\\.deb', '\\1') | first }}"
+    apps_discord_latest_version: "{{ apps_discord_latest.location | regex_search('(?:discord-|/)([0-9.]+)(?:\\.deb|/Discord\\.deb)', '\\1') | first }}"
 
 - name: Install latest Discord
   ansible.builtin.apt:
-    deb: "{{ discord_latest.location }}"
+    deb: "{{ apps_discord_latest.location }}"
   when: >-
     'discord' not in ansible_facts.packages or
-    ansible_facts.packages['discord'][0].version != discord_latest_version
+    ansible_facts.packages['discord'][0].version != apps_discord_latest_version

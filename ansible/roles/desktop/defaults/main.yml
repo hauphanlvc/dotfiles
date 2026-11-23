@@ -1,5 +1,5 @@
 ---
-desktop_packages:
+desktop_packages_debian:
   - libreoffice
   - vlc
   - gimp
@@ -13,5 +13,19 @@ desktop_packages:
   - tlp
   - fwupd
 
-# Not packaged in Ubuntu; installed from the upstream release branch
-source_code_pro_dir: "{{ target_home }}/.local/share/fonts/source-code-pro"
+desktop_packages_redhat:
+  - libreoffice
+  - vlc
+  - gimp
+  - fontawesome-fonts-all
+  - adobe-source-code-pro-fonts
+  - fcitx5
+  - fcitx5-bamboo
+  - fcitx5-gtk
+  - fcitx5-qt
+  - fcitx5-configtool
+  - tlp
+  - fwupd
+
+desktop_source_code_pro_dir: "{{ target_home }}/.local/share/fonts/source-code-pro"
+desktop_hack_nerd_font_dir: "{{ target_home }}/.local/share/fonts/hack-nerd"

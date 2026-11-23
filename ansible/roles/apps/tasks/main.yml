@@ -1,41 +1,92 @@
 ---
 # ansible_facts.packages is gathered once in the common role (tagged `always`)
 
-- name: Discord
-  ansible.builtin.import_tasks: discord.yml
+- name: Install Debian/Ubuntu desktop apps
+  when: ansible_facts['os_family'] == 'Debian'
+  block:
+    - name: Discord
+      ansible.builtin.import_tasks: discord.yml
 
-- name: GitHub release debs (Obsidian, LocalSend)
-  ansible.builtin.import_tasks: github_debs.yml
+    - name: GitHub release debs (Obsidian, LocalSend)
+      ansible.builtin.import_tasks: github_debs.yml
 
-- name: Add AnyDesk apt key
-  ansible.builtin.get_url:
-    url: https://keys.anydesk.com/repos/DEB-GPG-KEY
-    dest: /etc/apt/keyrings/anydesk.asc
-    mode: '0644'
+    - name: Add AnyDesk apt key
+      ansible.builtin.get_url:
+        url: https://keys.anydesk.com/repos/DEB-GPG-KEY
+        dest: /etc/apt/keyrings/anydesk.asc
+        mode: '0644'
 
-- name: Add AnyDesk repository
-  ansible.builtin.copy:
-    dest: /etc/apt/sources.list.d/anydesk.sources
-    mode: '0644'
-    content: |
-      Types: deb
-      URIs: https://deb.anydesk.com/
-      Suites: all
-      Components: main
-      Signed-By: /etc/apt/keyrings/anydesk.asc
-  register: anydesk_repo
+    - name: Add AnyDesk repository
+      ansible.builtin.copy:
+        dest: /etc/apt/sources.list.d/anydesk.sources
+        mode: '0644'
+        content: |
+          Types: deb
+          URIs: https://deb.anydesk.com/
+          Suites: all
+          Components: main
+          Signed-By: /etc/apt/keyrings/anydesk.asc
+      register: anydesk_repo
 
-- name: Add OBS Studio PPA
-  ansible.builtin.command: add-apt-repository -y ppa:obsproject/obs-studio
-  args:
-    creates: "/etc/apt/sources.list.d/obsproject-ubuntu-obs-studio-{{ ansible_distribution_release }}.sources"
-  register: obs_ppa
+    - name: Add OBS Studio PPA
+      ansible.builtin.command: add-apt-repository -y ppa:obsproject/obs-studio
+      args:
+        creates: "/etc/apt/sources.list.d/obsproject-ubuntu-obs-studio-{{ ansible_facts['distribution_release'] }}.sources"
+      register: obs_ppa
 
-- name: Install AnyDesk and OBS Studio
-  ansible.builtin.apt:
-    name: [anydesk, obs-studio]
-    update_cache: "{{ anydesk_repo is changed or obs_ppa is changed }}"
-    state: present
+    - name: Install AnyDesk and OBS Studio
+      ansible.builtin.apt:
+        name: [anydesk, obs-studio]
+        update_cache: "{{ anydesk_repo is changed or obs_ppa is changed }}"
+        state: present
+
+- name: Install Fedora desktop apps
+  when: ansible_facts['os_family'] == 'RedHat'
+  block:
+    - name: Obsidian (GitHub tarball -> /opt/Obsidian)
+      ansible.builtin.import_tasks: obsidian.yml
+
+    - name: Enable COPR repository for LocalSend
+      community.general.copr:
+        name: dregetas/localsend
+        state: enabled
+
+    - name: Add AnyDesk RPM repository
+      ansible.builtin.copy:
+        dest: /etc/yum.repos.d/AnyDesk-RPM.repo
+        mode: '0644'
+        content: |
+          [anydesk]
+          name=AnyDesk - stable
+          baseurl=http://rpm.anydesk.com/$basearch/
+          gpgcheck=1
+          repo_gpgcheck=1
+          gpgkey=https://keys.anydesk.com/repos/RPM-GPG-KEY
+
+    - name: Install Discord, OBS Studio, LocalSend, and AnyDesk
+      ansible.builtin.dnf:
+        name:
+          - discord
+          - obs-studio
+          - localsend
+          - anydesk
+        state: present
+
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+
+    - name: Open LocalSend port 53317 in firewalld
+      ansible.posix.firewalld:
+        port: "{{ item }}"
+        permanent: true
+        immediate: true
+        state: enabled
+      loop:
+        - 53317/tcp
+        - 53317/udp
+      when:
+        - "'firewalld.service' in ansible_facts.services"
+        - ansible_facts.services['firewalld.service'].state == 'running'
 
 - name: Anki
   ansible.builtin.import_tasks: anki.yml

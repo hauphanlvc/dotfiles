@@ -1,44 +1,30 @@
 ---
 # ansible_facts.packages is gathered once in the common role (tagged `always`)
 
-- name: Brave nightly
-  ansible.builtin.import_tasks: brave.yml
+- name: Install standard Firefox and Google Chrome (Debian/Ubuntu)
+  when: ansible_facts['os_family'] == 'Debian'
+  block:
+    - name: Install Firefox
+      ansible.builtin.apt:
+        name: firefox
+        state: present
 
-- name: Zen browser
-  ansible.builtin.import_tasks: zen.yml
+    - name: Install Google Chrome (latest)
+      ansible.builtin.apt:
+        deb: https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+      when: "'google-chrome-stable' not in ansible_facts.packages"
 
-- name: Add Mozilla apt key
-  ansible.builtin.get_url:
-    url: https://packages.mozilla.org/apt/repo-signing-key.gpg
-    dest: /etc/apt/keyrings/mozilla.asc
-    mode: '0644'
+- name: Install standard Firefox and Google Chrome (Fedora)
+  when: ansible_facts['os_family'] == 'RedHat'
+  block:
+    - name: Install Firefox
+      ansible.builtin.dnf:
+        name: firefox
+        state: present
 
-- name: Add Mozilla repository
-  ansible.builtin.copy:
-    dest: /etc/apt/sources.list.d/mozilla.sources
-    mode: '0644'
-    content: |
-      Types: deb
-      URIs: https://packages.mozilla.org/apt
-      Suites: mozilla
-      Components: main
-      Signed-By: /etc/apt/keyrings/mozilla.asc
-  register: mozilla_repo
-
-- name: Install Firefox Developer Edition
-  ansible.builtin.apt:
-    name: firefox-devedition
-    update_cache: "{{ mozilla_repo is changed }}"
-    state: present
-
-# The Chrome and Edge .debs register their own apt repo on install,
-# so after the first install `apt upgrade` keeps them on the latest version.
-- name: Install Google Chrome (latest)
-  ansible.builtin.apt:
-    deb: https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-  when: "'google-chrome-stable' not in ansible_facts.packages"
-
-- name: Install Microsoft Edge (latest)
-  ansible.builtin.apt:
-    deb: https://go.microsoft.com/fwlink?linkid=2149051
-  when: "'microsoft-edge-stable' not in ansible_facts.packages"
+    - name: Install Google Chrome (latest)
+      ansible.builtin.dnf:
+        name: https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+        state: present
+        disable_gpg_check: true
+      when: "'google-chrome-stable' not in ansible_facts.packages"

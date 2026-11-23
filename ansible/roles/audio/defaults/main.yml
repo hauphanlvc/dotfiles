@@ -1,5 +1,5 @@
 ---
-audio_packages:
+audio_packages_debian:
   - pipewire
   - pipewire-pulse
   - wireplumber
@@ -9,3 +9,13 @@ audio_packages:
   - xdg-desktop-portal-gnome
   - xdg-desktop-portal-gtk
   - dbus-user-session
+
+audio_packages_redhat:
+  - pipewire
+  - pipewire-pulseaudio
+  - wireplumber
+  - pipewire-utils
+  - pavucontrol
+  - xdg-desktop-portal
+  - xdg-desktop-portal-gnome
+  - xdg-desktop-portal-gtk

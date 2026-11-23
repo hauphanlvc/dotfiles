@@ -1,6 +1,6 @@
 # Disable runtime autosuspend on the DesignWare I2C controller and parent Intel LPSS PCI device
-# hosting the ELAN0676:00 (04F3:3195) touchpad, and isolate touchpad IRQs (27, 56) onto P-core 1 (CPUs 2, 3)
-# away from CPU0 (where IRQ 9 ACPI Embedded Controller runs).
-ACTION=="add|change", SUBSYSTEM=="platform", DRIVER=="i2c_designware", ATTR{power/control}="on", RUN+="/bin/sh -c 'echo 2 > /proc/irq/27/smp_affinity_list 2>/dev/null || true; echo N > /sys/module/workqueue/parameters/power_efficient 2>/dev/null || true'"
+# hosting the ELAN0676:00 (04F3:3195) touchpad, and dynamically isolate touchpad IRQs onto
+# P-core 1 (CPUs 2, 3) away from CPU0 (where IRQ 9 ACPI Embedded Controller runs).
+ACTION=="add|change", SUBSYSTEM=="platform", DRIVER=="i2c_designware", ATTR{power/control}="on", RUN+="/bin/sh -c 'irq=$(awk '\''/i2c_designware\\.0/{sub(\":\",\"\",$1); print $1; exit}'\'' /proc/interrupts); [ -n \"$irq\" ] && [ -w \"/proc/irq/$irq/smp_affinity_list\" ] && echo 2 > \"/proc/irq/$irq/smp_affinity_list\" 2>/dev/null || true; echo N > /sys/module/workqueue/parameters/power_efficient 2>/dev/null || true'"
 ACTION=="add|change", SUBSYSTEM=="pci", DRIVER=="intel-lpss", ATTR{power/control}="on"
-ACTION=="add|change", SUBSYSTEM=="i2c", KERNEL=="i2c-ELAN0676:00", ATTR{power/control}="on", RUN+="/bin/sh -c 'echo 3 > /proc/irq/56/smp_affinity_list 2>/dev/null || true'"
+ACTION=="add|change", SUBSYSTEM=="i2c", KERNEL=="i2c-ELAN0676:00", ATTR{power/control}="on", RUN+="/bin/sh -c 'irq=$(awk '\''/ELAN0676:00/{sub(\":\",\"\",$1); print $1; exit}'\'' /proc/interrupts); [ -n \"$irq\" ] && [ -w \"/proc/irq/$irq/smp_affinity_list\" ] && echo 3 > \"/proc/irq/$irq/smp_affinity_list\" 2>/dev/null || true'"

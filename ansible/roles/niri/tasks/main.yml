@@ -1,26 +1,44 @@
 ---
-# add-apt-repository writes the same .sources file as a manual setup, avoiding duplicates
-- name: Add danklinux PPA
-  ansible.builtin.command: add-apt-repository -y ppa:avengemedia/danklinux
-  args:
-    creates: "/etc/apt/sources.list.d/avengemedia-ubuntu-danklinux-{{ ansible_distribution_release }}.sources"
-  register: danklinux_ppa
+- name: Install niri and noctalia (Debian/Ubuntu)
+  when: ansible_facts['os_family'] == 'Debian'
+  block:
+    - name: Add danklinux PPA
+      ansible.builtin.command: add-apt-repository -y ppa:avengemedia/danklinux
+      args:
+        creates: "/etc/apt/sources.list.d/avengemedia-ubuntu-danklinux-{{ ansible_facts['distribution_release'] }}.sources"
+      register: danklinux_ppa
 
-- name: Install noctalia archive keyring
-  ansible.builtin.apt:
-    deb: https://pkg.noctalia.dev/deb/nickh-archive-keyring.deb
-    state: present
-  register: noctalia_keyring
+    - name: Install noctalia archive keyring
+      ansible.builtin.apt:
+        deb: https://pkg.noctalia.dev/deb/nickh-archive-keyring.deb
+        state: present
+      register: noctalia_keyring
 
-- name: Add noctalia repository
-  ansible.builtin.get_url:
-    url: "https://pkg.noctalia.dev/deb/noctalia-{{ ansible_distribution_release }}.sources"
-    dest: "/etc/apt/sources.list.d/noctalia-{{ ansible_distribution_release }}.sources"
-    mode: '0644'
-  register: noctalia_repo
+    - name: Add noctalia repository
+      ansible.builtin.get_url:
+        url: "https://pkg.noctalia.dev/deb/noctalia-{{ ansible_facts['distribution_release'] }}.sources"
+        dest: "/etc/apt/sources.list.d/noctalia-{{ ansible_facts['distribution_release'] }}.sources"
+        mode: '0644'
+      register: noctalia_repo
 
-- name: Install niri and noctalia
-  ansible.builtin.apt:
-    name: [niri, noctalia]
-    update_cache: "{{ danklinux_ppa is changed or noctalia_keyring is changed or noctalia_repo is changed }}"
-    state: present
+    - name: Install niri, noctalia, and Wayland utilities
+      ansible.builtin.apt:
+        name: "{{ niri_packages_debian }}"
+        update_cache: "{{ danklinux_ppa is changed or noctalia_keyring is changed or noctalia_repo is changed }}"
+        state: present
+
+- name: Install niri and noctalia-shell (Fedora)
+  when: ansible_facts['os_family'] == 'RedHat'
+  block:
+    - name: Enable COPR repositories for niri and noctalia-shell
+      community.general.copr:
+        name: "{{ item }}"
+        state: enabled
+      loop:
+        - yalter/niri
+        - zhangyi6324/noctalia-shell
+
+    - name: Install niri, noctalia-shell, and Wayland utilities
+      ansible.builtin.dnf:
+        name: "{{ niri_packages_redhat }}"
+        state: present

@@ -1,6 +1,18 @@
 ---
-dev_packages:
+dev_packages_debian:
   - ripgrep
   - fd-find
   - fzf
   - ansible-lint
+  - build-essential
+
+dev_packages_redhat:
+  - ripgrep
+  - fd-find
+  - fzf
+  - ansible-lint
+  - gcc
+  - gcc-c++
+  - make
+  - nodejs
+  - npm

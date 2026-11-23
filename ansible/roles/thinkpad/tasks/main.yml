@@ -1,8 +1,23 @@
 ---
+- name: Remove tuned and tuned-ppd on Fedora before configuring TLP
+  ansible.builtin.dnf:
+    name:
+      - tuned-ppd
+      - tuned
+    state: absent
+  when: ansible_facts['os_family'] == 'RedHat'
+
 - name: Ensure TLP is installed
-  ansible.builtin.apt:
+  ansible.builtin.package:
     name: tlp
     state: present
+
+- name: Ensure TLP service is enabled and started
+  ansible.builtin.systemd_service:
+    name: tlp
+    enabled: true
+    state: started
+  when: not ansible_check_mode
 
 - name: Configure TLP ThinkPad battery thresholds and I2C touchpad runtime PM denylist
   ansible.builtin.copy:

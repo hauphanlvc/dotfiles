@@ -1,8 +1,15 @@
 ---
-- name: Install flatpak
+- name: Install flatpak (Debian/Ubuntu)
   ansible.builtin.apt:
     name: [flatpak, gnome-software-plugin-flatpak]
     state: present
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Install flatpak (Fedora)
+  ansible.builtin.dnf:
+    name: flatpak
+    state: present
+  when: ansible_facts['os_family'] == 'RedHat'
 
 - name: Add flathub remote
   community.general.flatpak_remote:

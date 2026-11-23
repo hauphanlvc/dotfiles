@@ -1,0 +1,28 @@
+---
+niri_packages_debian:
+  - niri
+  - noctalia
+  - alacritty
+  - fuzzel
+  - xwayland
+  - wl-clipboard
+  - grim
+  - slurp
+  - brightnessctl
+  - gammastep
+  - swaylock
+  - swayidle
+
+niri_packages_redhat:
+  - niri
+  - noctalia-shell
+  - alacritty
+  - fuzzel
+  - xwayland-satellite
+  - wl-clipboard
+  - grim
+  - slurp
+  - brightnessctl
+  - gammastep
+  - swaylock
+  - swayidle

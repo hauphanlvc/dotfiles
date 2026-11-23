@@ -1,0 +1,60 @@
+---
+- name: Look up latest Obsidian release
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/obsidianmd/obsidian-releases/releases/latest
+    return_content: true
+  register: apps_obsidian_release
+  check_mode: false
+
+- name: Read installed Obsidian version marker
+  ansible.builtin.slurp:
+    src: /opt/Obsidian/.version
+  register: apps_obsidian_installed_marker
+  failed_when: false
+  check_mode: false
+
+- name: Set Obsidian version facts
+  ansible.builtin.set_fact:
+    apps_obsidian_latest_tag: "{{ apps_obsidian_release.json.tag_name }}"
+    apps_obsidian_installed_tag: "{{ (apps_obsidian_installed_marker.content | b64decode | trim) if (apps_obsidian_installed_marker is succeeded) else '' }}"
+    apps_obsidian_tarball_url: "{{ (apps_obsidian_release.json.assets | selectattr('name', 'match', '^obsidian-[0-9.]+\\.tar\\.gz$') | first).browser_download_url }}"
+
+- name: Install Obsidian {{ apps_obsidian_latest_tag }}
+  when: apps_obsidian_installed_tag != apps_obsidian_latest_tag
+  block:
+    - name: Remove old Obsidian folder
+      ansible.builtin.file:
+        path: /opt/Obsidian
+        state: absent
+
+    - name: Create Obsidian directory
+      ansible.builtin.file:
+        path: /opt/Obsidian
+        state: directory
+        mode: '0755'
+
+    - name: Download and extract Obsidian tarball
+      ansible.builtin.unarchive:
+        src: "{{ apps_obsidian_tarball_url }}"
+        dest: /opt/Obsidian
+        remote_src: true
+        extra_opts:
+          - --strip-components=1
+
+    - name: Write Obsidian version marker
+      ansible.builtin.copy:
+        content: "{{ apps_obsidian_latest_tag }}\n"
+        dest: /opt/Obsidian/.version
+        mode: '0644'
+
+- name: Symlink Obsidian CLI/launcher
+  ansible.builtin.file:
+    src: /opt/Obsidian/obsidian
+    dest: /usr/local/bin/obsidian
+    state: link
+
+- name: Add Obsidian desktop entry
+  ansible.builtin.copy:
+    src: obsidian.desktop
+    dest: /usr/share/applications/obsidian.desktop
+    mode: '0644'

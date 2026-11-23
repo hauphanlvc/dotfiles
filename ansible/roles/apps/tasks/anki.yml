@@ -1,8 +1,15 @@
 ---
-- name: Install Anki dependency packages
+- name: Install Anki dependency packages (Debian/Ubuntu)
   ansible.builtin.apt:
-    name: "{{ anki_dependencies }}"
+    name: "{{ anki_dependencies_debian }}"
     state: present
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Install Anki dependency packages (Fedora)
+  ansible.builtin.dnf:
+    name: "{{ anki_dependencies_redhat }}"
+    state: present
+  when: ansible_facts['os_family'] == 'RedHat'
 
 # `anki --version` starts Anki briefly, so run it as the user, not root.
 # Output is "Starting Anki X...\nAnki X"; match the exact "Anki X" line.
@@ -28,6 +35,7 @@
       ansible.builtin.command:
         cmd: ./install.sh
         chdir: /tmp/anki-linux/
+      changed_when: true
 
     - name: Clean up Anki installer
       ansible.builtin.file:

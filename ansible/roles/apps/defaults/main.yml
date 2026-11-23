@@ -1,14 +1,22 @@
 ---
-# .debs installed from the latest GitHub release.
+# .debs installed from the latest GitHub release on Debian/Ubuntu.
 # pkg = dpkg package name, pattern = regex matching the release asset name
 github_debs:
   - { pkg: obsidian,  repo: obsidianmd/obsidian-releases, pattern: '^obsidian_.*_amd64\.deb$' }
   - { pkg: localsend, repo: localsend/localsend,          pattern: '^LocalSend-.*-linux-x86-64\.deb$' }
 
-anki_dependencies:
+anki_dependencies_debian:
   - libxcb-xinerama0
   - libxcb-cursor0
   - libnss3
   - libxcb-icccm4
   - libxcb-keysyms1
-  - zstd              # needed to unpack the .tar.zst release
+  - zstd
+
+anki_dependencies_redhat:
+  - xcb-util-cursor
+  - xcb-util-wm
+  - xcb-util-keysyms
+  - nss
+  - zstd
+  - libxkbcommon-x11

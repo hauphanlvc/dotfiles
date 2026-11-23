@@ -1,5 +1,12 @@
 ---
-- name: Install audio and portal packages
+- name: Install audio and portal packages (Debian/Ubuntu)
   ansible.builtin.apt:
-    name: "{{ audio_packages }}"
+    name: "{{ audio_packages_debian }}"
     state: present
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Install audio and portal packages (Fedora)
+  ansible.builtin.dnf:
+    name: "{{ audio_packages_redhat }}"
+    state: present
+  when: ansible_facts['os_family'] == 'RedHat'

@@ -1,5 +1,5 @@
 ---
-common_packages:
+common_packages_debian:
   - software-properties-common
   - ca-certificates
   - curl
@@ -15,3 +15,22 @@ common_packages:
   - intel-gpu-tools
   - ffmpeg
   - sshpass
+  - libimobiledevice-utils
+
+common_packages_redhat:
+  - dnf-plugins-core
+  - ca-certificates
+  - curl
+  - gnupg2
+  - git
+  - tmux
+  - vim-enhanced
+  - htop
+  - btop
+  - tree
+  - fastfetch
+  - util-linux
+  - igt-gpu-tools
+  - sshpass
+  - libimobiledevice-utils
+  - intel-media-driver

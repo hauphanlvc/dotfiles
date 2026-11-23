@@ -47,30 +47,25 @@ gestures {
         off
     }
 }
-// Right Left
-// output "eDP-1" {
-//     mode "1920x1200@100"
-//     position x=1920 y=0
-//     scale 1.0
-// }
-//
-// output "DP-1" {
-//     mode "1920x1080@60"
-//     position x=0 y=0
-//     scale 1.0
-// }
 
 // Below-Above
 output "eDP-1" {
-    mode "1920x1200@100"
     position x=0 y=1080
     scale 1.0
 }
 output "DP-1" {
-    mode "1920x1080@60"
     position x=0 y=0
-    scale 1.0
 }
+
+// output "eDP-1" {
+//     position x=0 y=0
+//     scale 1.0
+// }
+//
+// output "DP-1" {
+//     position x=1920 y=0
+// }
+
 
 // Open the Firefox picture-in-picture player as floating by default.
 window-rule {
@@ -114,7 +109,7 @@ binds {
 
     Mod+O repeat=false { toggle-overview; }
 
-    Mod+Q repeat=false { close-window; }
+    Mod+Shift+Q repeat=false { close-window; }
 
     Mod+Left  { focus-column-left; }
     Mod+Down  { focus-window-down; }
@@ -252,6 +247,7 @@ binds {
     Mod+W { toggle-column-tabbed-display; }
 
     Print { screenshot; }
+    Mod+Shift+S { screenshot; }
     Ctrl+Print { screenshot-screen; }
     Alt+Print { screenshot-window; }
     Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }

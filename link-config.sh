@@ -11,22 +11,19 @@ NVIM_PROFILE="lazyvim"
 
 CONFIG_DIRS=(
     "alacritty"
-    "i3status"
     "niri"
-    "sway"
     "tmux"
 )
 
 usage() {
     cat <<EOF
-Usage: $(basename "$0") [--nvim=lazyvim|nvim] [--all]
+Usage: $(basename "$0") [--nvim=lazyvim|nvim]
 
-Creates symbolic links from ~/.config/* and ~/.bashrc.user -> ~/dotfiles/config/*
+Creates symbolic links from ~/.config/*, ~/.bashrc.user, ~/.gitconfig, and ~/iphone-battery.sh -> ~/dotfiles
 
 Options:
   --nvim=lazyvim   Link ~/.config/nvim -> ~/dotfiles/config/lazyvim (default)
   --nvim=nvim      Link ~/.config/nvim -> ~/dotfiles/config/nvim (custom init.lua)
-  --all            Also link i3 and kitty configs into ~/.config/
 EOF
 }
 
@@ -34,9 +31,6 @@ for arg in "$@"; do
     case "$arg" in
         --nvim=lazyvim|--nvim=nvim)
             NVIM_PROFILE="${arg#--nvim=}"
-            ;;
-        --all)
-            CONFIG_DIRS+=("i3" "kitty")
             ;;
         --help|-h)
             usage
@@ -95,6 +89,11 @@ fi
 ln -sfn "${REPO_CONFIG_DIR}/${NVIM_PROFILE}" "${USER_CONFIG_DIR}/nvim"
 echo "Linked: ${USER_CONFIG_DIR}/nvim -> $(readlink "${USER_CONFIG_DIR}/nvim")"
 
-# Link single files
+# Link single config files and user scripts
 link_file "${REPO_CONFIG_DIR}/bash/bashrc.user" "${HOME}/.bashrc.user"
 link_file "${REPO_CONFIG_DIR}/zed/settings.json" "${USER_CONFIG_DIR}/zed/settings.json"
+link_file "${REPO_CONFIG_DIR}/fcitx5/config" "${USER_CONFIG_DIR}/fcitx5/config"
+link_file "${REPO_CONFIG_DIR}/fcitx5/profile" "${USER_CONFIG_DIR}/fcitx5/profile"
+link_file "${REPO_CONFIG_DIR}/environment.d/im.conf" "${USER_CONFIG_DIR}/environment.d/im.conf"
+link_file "${REPO_CONFIG_DIR}/git/gitconfig" "${HOME}/.gitconfig"
+link_file "${DOTFILES_DIR}/scripts/iphone-battery.sh" "${HOME}/iphone-battery.sh"
