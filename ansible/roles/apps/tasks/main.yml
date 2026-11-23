@@ -46,10 +46,8 @@
     - name: Obsidian (GitHub tarball -> /opt/Obsidian)
       ansible.builtin.import_tasks: obsidian.yml
 
-    - name: Enable COPR repository for LocalSend
-      community.general.copr:
-        name: dregetas/localsend
-        state: enabled
+    - name: LocalSend (GitHub tarball -> /opt/LocalSend)
+      ansible.builtin.import_tasks: localsend.yml
 
     - name: Add AnyDesk RPM repository
       ansible.builtin.copy:
@@ -63,12 +61,11 @@
           repo_gpgcheck=1
           gpgkey=https://keys.anydesk.com/repos/RPM-GPG-KEY
 
-    - name: Install Discord, OBS Studio, LocalSend, and AnyDesk
+    - name: Install Discord, OBS Studio, and AnyDesk
       ansible.builtin.dnf:
         name:
           - discord
           - obs-studio
-          - localsend
           - anydesk
         state: present
 

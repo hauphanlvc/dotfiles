@@ -25,6 +25,7 @@ desktop_packages_redhat:
   - fcitx5-qt
   - fcitx5-configtool
   - tlp
+  - tlp-pd
   - fwupd
 
 desktop_source_code_pro_dir: "{{ target_home }}/.local/share/fonts/source-code-pro"

@@ -1,0 +1,56 @@
+---
+- name: Configure TLP I2C touchpad runtime PM denylist
+  ansible.builtin.copy:
+    src: 02-thinkpad-touchpad.conf
+    dest: /etc/tlp.d/02-thinkpad-touchpad.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reload TLP
+
+- name: Disable runtime autosuspend on DesignWare I2C touchpad controller via udev
+  ansible.builtin.copy:
+    src: 99-touchpad-i2c-power.rules
+    dest: /etc/udev/rules.d/99-touchpad-i2c-power.rules
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reload udev rules
+
+- name: Install systemd sleep hook to reset ELAN I2C touchpad after suspend
+  ansible.builtin.copy:
+    src: touchpad-i2c-resume
+    dest: /usr/lib/systemd/system-sleep/touchpad-i2c-resume
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Gather service facts for irqbalance check
+  ansible.builtin.service_facts:
+
+- name: Keep irqbalance from overriding touchpad IRQ affinity
+  when: "'irqbalance.service' in ansible_facts.services"
+  block:
+    - name: Install irqbalance touchpad policy script
+      ansible.builtin.copy:
+        src: irqbalance-touchpad-policy.sh
+        dest: /usr/local/bin/irqbalance-touchpad-policy.sh
+        owner: root
+        group: root
+        mode: '0755'
+      notify:
+        - Restart irqbalance
+        - Reload udev rules
+
+    - name: Configure irqbalance to use touchpad policy script
+      ansible.builtin.lineinfile:
+        path: "{{ '/etc/sysconfig/irqbalance' if ansible_facts['os_family'] == 'RedHat' else '/etc/default/irqbalance' }}"
+        regexp: '^#?IRQBALANCE_ARGS='
+        line: 'IRQBALANCE_ARGS="--policyscript=/usr/local/bin/irqbalance-touchpad-policy.sh"'
+        create: true
+        owner: root
+        group: root
+        mode: '0644'
+      notify:
+        - Restart irqbalance
+        - Reload udev rules

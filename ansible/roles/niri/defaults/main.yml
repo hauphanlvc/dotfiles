@@ -15,7 +15,7 @@ niri_packages_debian:
 
 niri_packages_redhat:
   - niri
-  - noctalia-shell
+  - noctalia
   - alacritty
   - fuzzel
   - xwayland-satellite

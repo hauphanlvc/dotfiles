@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=LocalSend
+Comment=Share files to nearby devices
+Exec=/opt/LocalSend/localsend_app %U
+Icon=/opt/LocalSend/data/flutter_assets/assets/img/logo-512.png
+Terminal=false
+Categories=Network;FileTransfer;
+StartupWMClass=localsend_app

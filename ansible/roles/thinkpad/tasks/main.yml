@@ -1,25 +1,36 @@
 ---
-- name: Remove tuned and tuned-ppd on Fedora before configuring TLP
+- name: Remove conflicting power managers on Fedora before configuring TLP
   ansible.builtin.dnf:
     name:
       - tuned-ppd
       - tuned
+      - power-profiles-daemon
     state: absent
   when: ansible_facts['os_family'] == 'RedHat'
 
-- name: Ensure TLP is installed
-  ansible.builtin.package:
+- name: Ensure TLP and TLP Profiles Daemon are installed (Fedora)
+  ansible.builtin.dnf:
+    name:
+      - tlp
+      - tlp-pd
+    state: present
+  when: ansible_facts['os_family'] == 'RedHat'
+
+- name: Ensure TLP is installed (Debian/Ubuntu)
+  ansible.builtin.apt:
     name: tlp
     state: present
+  when: ansible_facts['os_family'] == 'Debian'
 
-- name: Ensure TLP service is enabled and started
+- name: Ensure TLP services are enabled and started
   ansible.builtin.systemd_service:
-    name: tlp
+    name: "{{ item }}"
     enabled: true
     state: started
+  loop: "{{ ['tlp', 'tlp-pd'] if ansible_facts['os_family'] == 'RedHat' else ['tlp'] }}"
   when: not ansible_check_mode
 
-- name: Configure TLP ThinkPad battery thresholds and I2C touchpad runtime PM denylist
+- name: Configure TLP ThinkPad battery charge thresholds
   ansible.builtin.copy:
     src: 01-thinkpad.conf
     dest: /etc/tlp.d/01-thinkpad.conf
@@ -28,19 +39,6 @@
     mode: '0644'
   notify: Reload TLP
 
-- name: Disable runtime autosuspend on DesignWare I2C touchpad controller via udev
-  ansible.builtin.copy:
-    src: 99-touchpad-i2c-power.rules
-    dest: /etc/udev/rules.d/99-touchpad-i2c-power.rules
-    owner: root
-    group: root
-    mode: '0644'
-  notify: Reload udev rules
-
-- name: Install systemd sleep hook to reset ELAN I2C touchpad after suspend
-  ansible.builtin.copy:
-    src: touchpad-i2c-resume
-    dest: /usr/lib/systemd/system-sleep/touchpad-i2c-resume
-    owner: root
-    group: root
-    mode: '0755'
+- name: Apply opt-in ThinkPad I2C touchpad workarounds
+  ansible.builtin.include_tasks: touchpad.yml
+  when: thinkpad_touchpad_fix | bool

@@ -18,16 +18,16 @@ roles/<role>/{tasks,defaults,meta,handlers,templates,files}
 | `common` | base CLI tools, `libimobiledevice-utils`, RPM Fusion + `intel-media-driver` (Fedora) |
 | `dev` | `ripgrep`, `fd`, `fzf`, `ansible-lint`, compilers, `nodejs` |
 | `neovim` | latest Neovim tarball in `/opt` |
-| `desktop` | `libreoffice`, `vlc`, `gimp`, `fcitx5` + Bamboo, `tlp` (removes `tuned-ppd`/`power-profiles-daemon`), Source Code Pro & Hack Nerd Font Mono |
+| `desktop` | `libreoffice`, `vlc`, `gimp`, `fcitx5` + Bamboo, `tlp` + `tlp-pd` (removes `tuned-ppd`/`power-profiles-daemon`), Source Code Pro & Hack Nerd Font Mono |
 | `audio` | `pipewire` + `wireplumber` + xdg portals (dependency of `niri`) |
-| `niri` | `niri` + `noctalia`/`noctalia-shell` + `alacritty` + `fuzzel` + Wayland utilities |
+| `niri` | `niri` + `noctalia` + `alacritty` + `fuzzel` + Wayland utilities |
 | `flatpak` | `flatpak`, `flathub`, Stremio |
 | `docker` | `docker-ce`, enables `docker.service`, adds user to `docker` group |
 | `browsers` | standard `firefox`, `google-chrome-stable` |
-| `apps` | `discord`, `obsidian` (`/opt/Obsidian` tarball on Fedora), `localsend` (+ `firewalld` 53317), `anydesk`, `obs-studio`, `anki` |
+| `apps` | `discord`, `obsidian` (`/opt/Obsidian` tarball on Fedora), `localsend` (`/opt/LocalSend` tarball on Fedora, + `firewalld` 53317), `anydesk`, `obs-studio`, `anki` |
 | `k8s` | `kubectl`, `kind`, and `/etc/sysctl.d/99-k8s.conf` inotify limits |
 | `user_tools` | `rustup`, `zed`, `opencode`, `agy` (as user) |
-| `thinkpad` | ThinkPad TLP thresholds, dynamic I2C touchpad IRQ/power udev rule, suspend-resume hook (`--tags thinkpad`) |
+| `thinkpad` | ThinkPad TLP battery thresholds (`--tags thinkpad`); optional I2C touchpad/IRQ fixes via `-e thinkpad_touchpad_fix=true` |
 | `monitoring` | `node_exporter` systemd service |
 
 ## Bootstrap

@@ -120,8 +120,9 @@ Install Windows 11 **before** Fedora so Windows Boot Manager does not overwrite 
    # Full workstation setup (prompts for sudo password with -K)
    ansible-playbook site.yml -K
 
-   # Apply ThinkPad T14 Gen 3 battery thresholds & I2C touchpad fixes
+   # Apply ThinkPad T14 Gen 3 TLP battery thresholds (75–80%)
    ansible-playbook site.yml --tags thinkpad -K
+   # (Add -e thinkpad_touchpad_fix=true only if I2C touchpad stutter/resume issues appear)
    ```
    *(Reboot or log out and select **Niri** at the login screen.)*
 
@@ -138,11 +139,12 @@ Install Windows 11 **before** Fedora so Windows Boot Manager does not overwrite 
 Run these checks once you're logged into your **Niri** session:
 
 ### 1. Niri, Noctalia & Wayland Input (`fcitx5`)
-- Verify Noctalia binary name:
+- Verify Niri & Noctalia (both installed from official Fedora 45 repos):
   ```bash
-  command -v noctalia || command -v noctalia-shell
+  command -v niri noctalia
+  niri validate
   ```
-  *(If Fedora's COPR package installs `noctalia-shell` or `qs -c noctalia-shell` instead of `noctalia`, update `spawn-at-startup` in `~/.config/niri/config.kdl` accordingly.)*
+  *(Your `~/.config/niri/config.kdl` launches Noctalia v5 natively via `spawn-at-startup "noctalia"`.)*
 - Verify `fcitx5` environment variables & Bamboo typing:
   ```bash
   env | grep -E 'XMODIFIERS|QT_IM_MODULE'
@@ -150,10 +152,11 @@ Run these checks once you're logged into your **Niri** session:
   ```
   Test Vietnamese input with `Super+Space` / `Ctrl+Shift+LShift` in Alacritty, Firefox, and Obsidian.
 
-### 2. ThinkPad T14 Gen 3 Hardware & Power (`TLP` + Touchpad + S3)
+### 2. ThinkPad T14 Gen 3 Hardware & Power (`TLP` + `tlp-pd` + S3)
 ```bash
-# 1. Confirm tuned-ppd is gone and TLP is active with 75–80% battery thresholds
-systemctl is-active tlp
+# 1. Confirm tuned-ppd / power-profiles-daemon are gone and TLP + tlp-pd are active with 75–80% battery thresholds
+systemctl is-active tlp tlp-pd
+tlpctl list
 sudo tlp-stat -b | grep -E 'charge_control|threshold'
 
 # 2. Confirm S3 deep sleep is active
@@ -162,7 +165,7 @@ cat /sys/power/mem_sleep
 # If it shows [s2idle], set Linux S3 in BIOS or run:
 # sudo grubby --update-kernel=ALL --args="mem_sleep_default=deep"
 
-# 3. Confirm I2C touchpad runtime PM is locked to 'on' and IRQs are off CPU0
+# 3. (Only if you applied -e thinkpad_touchpad_fix=true) Confirm I2C touchpad runtime PM is 'on' and IRQs are off CPU0
 cat /sys/bus/i2c/devices/i2c-ELAN0676:00/power/control
 grep -iE 'i2c_designware|ELAN0676' /proc/interrupts
 ```

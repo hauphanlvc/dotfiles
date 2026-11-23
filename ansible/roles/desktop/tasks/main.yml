@@ -24,12 +24,13 @@
 - name: Configure desktop packages (Fedora)
   when: ansible_facts['os_family'] == 'RedHat'
   block:
-    # Fedora defaults to tuned-ppd, which conflicts with tlp
-    - name: Remove tuned and tuned-ppd before installing TLP
+    # Fedora defaults to tuned-ppd; both tuned-ppd and power-profiles-daemon conflict with tlp / tlp-pd
+    - name: Remove conflicting power managers before installing TLP
       ansible.builtin.dnf:
         name:
           - tuned-ppd
           - tuned
+          - power-profiles-daemon
         state: absent
 
     - name: Enable COPR repository for fcitx5-bamboo
@@ -42,11 +43,15 @@
         name: "{{ desktop_packages_redhat }}"
         state: present
 
-    - name: Enable and start TLP service
+    - name: Enable and start TLP services
       ansible.builtin.systemd_service:
-        name: tlp
+        name: "{{ item }}"
         enabled: true
         state: started
+      loop:
+        - tlp
+        - tlp-pd
+      when: not ansible_check_mode
 
 - name: Install Source Code Pro font (Debian/Ubuntu)
   become: false

@@ -16,7 +16,7 @@
 - name: Set Obsidian version facts
   ansible.builtin.set_fact:
     apps_obsidian_latest_tag: "{{ apps_obsidian_release.json.tag_name }}"
-    apps_obsidian_installed_tag: "{{ (apps_obsidian_installed_marker.content | b64decode | trim) if (apps_obsidian_installed_marker is succeeded) else '' }}"
+    apps_obsidian_installed_tag: "{{ (apps_obsidian_installed_marker.content | b64decode | trim) if ('content' in apps_obsidian_installed_marker) else '' }}"
     apps_obsidian_tarball_url: "{{ (apps_obsidian_release.json.assets | selectattr('name', 'match', '^obsidian-[0-9.]+\\.tar\\.gz$') | first).browser_download_url }}"
 
 - name: Install Obsidian {{ apps_obsidian_latest_tag }}

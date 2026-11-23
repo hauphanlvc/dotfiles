@@ -1,0 +1,4 @@
+---
+# Opt-in ThinkPad T14 Gen 3 ELAN0676 I2C touchpad stutter/resume workarounds.
+# Leave false unless touchpad lag on battery or post-sleep freezes reproduce.
+thinkpad_touchpad_fix: false

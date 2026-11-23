@@ -27,18 +27,14 @@
         update_cache: "{{ danklinux_ppa is changed or noctalia_keyring is changed or noctalia_repo is changed }}"
         state: present
 
-- name: Install niri and noctalia-shell (Fedora)
+- name: Install niri and noctalia (Fedora)
   when: ansible_facts['os_family'] == 'RedHat'
   block:
-    - name: Enable COPR repositories for niri and noctalia-shell
-      community.general.copr:
-        name: "{{ item }}"
-        state: enabled
-      loop:
-        - yalter/niri
-        - zhangyi6324/noctalia-shell
-
-    - name: Install niri, noctalia-shell, and Wayland utilities
+    # Both niri and noctalia are in the official Fedora repositories (Fedora 44+).
+    # Exclude power-profiles-daemon (recommended by noctalia) so it does not conflict with TLP.
+    - name: Install niri, noctalia, and Wayland utilities
       ansible.builtin.dnf:
         name: "{{ niri_packages_redhat }}"
+        exclude:
+          - power-profiles-daemon
         state: present

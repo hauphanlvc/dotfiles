@@ -1,0 +1,68 @@
+---
+- name: Install LocalSend runtime dependency
+  ansible.builtin.dnf:
+    name: libayatana-appindicator-gtk3
+    state: present
+
+- name: Look up latest LocalSend release
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/localsend/localsend/releases/latest
+    return_content: true
+  register: apps_localsend_release
+  check_mode: false
+
+- name: Read installed LocalSend version marker
+  ansible.builtin.slurp:
+    src: /opt/LocalSend/.version
+  register: apps_localsend_installed_marker
+  failed_when: false
+  check_mode: false
+
+- name: Set LocalSend version facts
+  ansible.builtin.set_fact:
+    apps_localsend_latest_tag: "{{ apps_localsend_release.json.tag_name }}"
+    apps_localsend_installed_tag: >-
+      {{ (apps_localsend_installed_marker.content | b64decode | trim)
+         if ('content' in apps_localsend_installed_marker) else '' }}
+    apps_localsend_tarball_url: >-
+      {{ (apps_localsend_release.json.assets
+          | selectattr('name', 'match', '^LocalSend-[0-9.]+-linux-x86-64\.tar\.gz$')
+          | first).browser_download_url }}
+
+- name: Install LocalSend {{ apps_localsend_latest_tag }}
+  when: apps_localsend_installed_tag != apps_localsend_latest_tag
+  block:
+    - name: Remove old LocalSend folder
+      ansible.builtin.file:
+        path: /opt/LocalSend
+        state: absent
+
+    - name: Create LocalSend directory
+      ansible.builtin.file:
+        path: /opt/LocalSend
+        state: directory
+        mode: '0755'
+
+    - name: Download and extract LocalSend tarball
+      ansible.builtin.unarchive:
+        src: "{{ apps_localsend_tarball_url }}"
+        dest: /opt/LocalSend
+        remote_src: true
+
+    - name: Write LocalSend version marker
+      ansible.builtin.copy:
+        content: "{{ apps_localsend_latest_tag }}\n"
+        dest: /opt/LocalSend/.version
+        mode: '0644'
+
+- name: Symlink LocalSend launcher
+  ansible.builtin.file:
+    src: /opt/LocalSend/localsend_app
+    dest: /usr/local/bin/localsend
+    state: link
+
+- name: Add LocalSend desktop entry
+  ansible.builtin.copy:
+    src: localsend.desktop
+    dest: /usr/share/applications/localsend.desktop
+    mode: '0644'

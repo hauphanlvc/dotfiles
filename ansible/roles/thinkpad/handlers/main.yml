@@ -3,6 +3,15 @@
   ansible.builtin.command: tlp start
   changed_when: true
 
+- name: Restart irqbalance
+  ansible.builtin.systemd_service:
+    name: irqbalance
+    state: restarted
+  when:
+    - not ansible_check_mode
+    - "'irqbalance.service' in ansible_facts.services"
+    - ansible_facts.services['irqbalance.service'].state == 'running'
+
 - name: Reload udev rules
   ansible.builtin.shell: |
     udevadm control --reload-rules
